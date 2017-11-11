@@ -72,7 +72,7 @@ var PlayScene = cc.Scene.extend({
             "Arial-BoldMT",
             28,
             null,
-            cc.TEXT_ALIGNMENT_CENTER,
+            cc.TEXT_ALIGNMENT_CENTER
          );
          relaxLabel.attr({
             x: cx - 155,
@@ -264,7 +264,7 @@ var PlayScene = cc.Scene.extend({
          "Arial-BoldMT",
          72,
          null,
-         cc.TEXT_ALIGNMENT_CENTER,
+         cc.TEXT_ALIGNMENT_CENTER
       );
       scoreLabel.attr({ x: cx, y: cy + 100 });
       overLayer.addChild(scoreLabel);
@@ -294,7 +294,7 @@ var PlayScene = cc.Scene.extend({
          "Arial-BoldMT",
          30,
          null,
-         cc.TEXT_ALIGNMENT_CENTER,
+         cc.TEXT_ALIGNMENT_CENTER
       );
       bestLabel.attr({ x: cx, y: cy });
       overLayer.addChild(bestLabel);

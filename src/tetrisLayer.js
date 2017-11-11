@@ -61,7 +61,7 @@ var TetrisLayer = cc.Layer.extend({
          "Arial",
          size,
          null,
-         cc.TEXT_ALIGNMENT_CENTER,
+         cc.TEXT_ALIGNMENT_CENTER
       );
       label.attr({ x: BASESIZE * 0.5, y: BASESIZE * 0.5 });
       pic.addChild(label);
@@ -265,7 +265,7 @@ var TetrisLayer = cc.Layer.extend({
          "Arial",
          30,
          null,
-         cc.TEXT_ALIGNMENT_CENTER,
+         cc.TEXT_ALIGNMENT_CENTER
       );
       score.attr({ x: px + pt.x, y: py + pt.y, color: cc.color(128, 128, 128) });
       this.scene.addChild(score);

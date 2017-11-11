@@ -72,7 +72,7 @@ var MainScene = cc.Scene.extend({
             "Arial-BoldMT",
             30,
             null,
-            cc.TEXT_ALIGNMENT_CENTER,
+            cc.TEXT_ALIGNMENT_CENTER
          );
          highScore.attr({
             x: cx,
