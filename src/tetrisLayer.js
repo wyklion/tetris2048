@@ -102,22 +102,22 @@ var TetrisLayer = cc.Layer.extend({
    sendNumer: function (nowNum, nextNum, first) {
       //    --[[
       //    gameState = "READY"
-      //    var x,y = this.getParent().nextPic:getPosition()
-      //    var scale = this.getParent().nextPic:getScale()
-      //    this.getParent().nextPic:setVisible(false)
-      //   self.nowNum = self.nextNum
-      //   self.nowPic = this.getNumerSprite(self.nowNum)
-      //    self.nowPic:setPosition(ccp(x,y))
-      //    self.nowPic:setScale(scale)
-      //    this.addChild(self.nowPic)
-      //    self.nowPic:runAction(transition.sequence({
-      //        CCSpawn:createWithTwoActions(CCMoveTo:create(0.1,this.getBlockPosition(this.idx(math.ceil(COL/2),ROW))),
-      //                                                       CCScaleTo:create(0.1,1)),
-      //       CCCallFunc:create(function()
+      //    var x,y = this.getParent().nextPic.getPosition()
+      //    var scale = this.getParent().nextPic.getScale()
+      //    this.getParent().nextPic.setVisible(false)
+      //   this.nowNum = this.nextNum
+      //   this.nowPic = this.getNumerSprite(this.nowNum)
+      //    this.nowPic.setPosition(ccp(x,y))
+      //    this.nowPic.setScale(scale)
+      //    this.addChild(this.nowPic)
+      //    this.nowPic.runAction(transition.sequence({
+      //        CCSpawn.createWithTwoActions(CCMoveTo.create(0.1,this.getBlockPosition(this.idx(Math.ceil(COL/2),ROW))),
+      //                                                       CCScaleTo.create(0.1,1)),
+      //       CCCallFunc.create(function()
       //            gameState = "RUN"
       //            this.getNextNumer()
-      //            self.nowPic.idx = this.idx(math.ceil(COL/2),ROW)
-      //            self.passTime = 0
+      //            this.nowPic.idx = this.idx(Math.ceil(COL/2),ROW)
+      //            this.passTime = 0
       //        end)
       //    }))
       //    --]]
@@ -125,50 +125,53 @@ var TetrisLayer = cc.Layer.extend({
       this.nowPic = this.getNumerSprite(this.nowNum, this.idx(Math.ceil(COL / 2), ROW));
       this.getNextNumer(nextNum);
       this.passTime = 0;
-      if (!firstTime) {
+      if (!first) {
          this.saveRecord();
       }
    },
+   /**
+    * 从左下数y行x列的序号
+    */
    idx: function (x, y) {
-      return (y - 1) * COL + x;
+      return (y - 1) * COL + x - 1;//数组序号
    },
    pos: function (idx) {
-      var y = Math.ceil(idx / COL);
-      var x = idx - (y - 1) * COL;
+      var y = Math.ceil((idx + 1) / COL);
+      var x = idx + 1 - (y - 1) * COL;
       return { x: x, y: y };
    },
 
    loadRecord: function () {
       if (this.scene.autoDown) {
-         if (!GameData.playRecord)
+         if (!TetrisData.playRecord)
             return false;
          for (var i = 0; i < ROW * COL; i++) {
-            this.block[i].num = GameData.playBrick[i]
+            this.block[i].num = TetrisData.playBrick[i]
             if (this.block[i].num != 0) {
                this.block[i].pic = this.getNumerSprite(this.block[i].num, i)
             }
          }
-         this.nowNum = GameData.playNowNum;
-         this.nextNum = GameData.playNextNum;
-         this.score = GameData.playScore;
-         this.level = GameData.playLevel;
-         this.speed = GameData.playSpeed;
-         this.levelNum = GameData.playLevelNum;
+         this.nowNum = TetrisData.playNowNum;
+         this.nextNum = TetrisData.playNextNum;
+         this.score = TetrisData.playScore;
+         this.level = TetrisData.playLevel;
+         this.speed = TetrisData.playSpeed;
+         this.levelNum = TetrisData.playLevelNum;
       }
       else {
-         if (!GameData.relaxRecord)
+         if (!TetrisData.relaxRecord)
             return false;
          for (var i = 0; i < ROW * COL; i++) {
-            this.block[i].num = GameData.relaxBrick[i];
+            this.block[i].num = TetrisData.relaxBrick[i];
             if (this.block[i].num != 0)
                this.block[i].pic = this.getNumerSprite(this.block[i].num, i);
          }
-         this.nowNum = GameData.relaxNowNum;
-         this.nextNum = GameData.relaxNextNum;
-         this.score = GameData.relaxScore;
-         this.level = GameData.relaxLevel;
-         this.speed = GameData.relaxSpeed;
-         this.levelNum = GameData.relaxLevelNum;
+         this.nowNum = TetrisData.relaxNowNum;
+         this.nextNum = TetrisData.relaxNextNum;
+         this.score = TetrisData.relaxScore;
+         this.level = TetrisData.relaxLevel;
+         this.speed = TetrisData.relaxSpeed;
+         this.levelNum = TetrisData.relaxLevelNum;
       }
       this.scene.scoreLabel.setString("" + this.score);
       this.sendNumer(this.nowNum, this.nextNum);
@@ -177,40 +180,40 @@ var TetrisLayer = cc.Layer.extend({
 
    saveRecord: function () {
       if (this.scene.autoDown) {
-         GameData.playBrick = {};
+         TetrisData.playBrick = {};
          for (var i = 0; i < ROW * COL; i++) {
-            GameData.playBrick[i] = this.block[i].num;
+            TetrisData.playBrick[i] = this.block[i].num;
          }
-         GameData.playNowNum = this.nowNum;
-         GameData.playNextNum = this.nextNum;
-         GameData.playScore = this.score;
-         GameData.playLevel = this.level;
-         GameData.playSpeed = this.speed;
-         GameData.playLevelNum = this.levelNum;
-         GameData.playRecord = true;
+         TetrisData.playNowNum = this.nowNum;
+         TetrisData.playNextNum = this.nextNum;
+         TetrisData.playScore = this.score;
+         TetrisData.playLevel = this.level;
+         TetrisData.playSpeed = this.speed;
+         TetrisData.playLevelNum = this.levelNum;
+         TetrisData.playRecord = true;
       }
       else {
-         GameData.relaxBrick = {};
+         TetrisData.relaxBrick = {};
          for (var i = 0; i < ROW * COL; i++) {
-            GameData.relaxBrick[i] = this.block[i].num;
+            TetrisData.relaxBrick[i] = this.block[i].num;
          }
-         GameData.relaxNowNum = this.nowNum;
-         GameData.relaxNextNum = this.nextNum;
-         GameData.relaxScore = this.score;
-         GameData.relaxLevel = this.level;
-         GameData.relaxSpeed = this.speed;
-         GameData.relaxLevelNum = this.levelNum;
-         GameData.relaxRecord = true;
+         TetrisData.relaxNowNum = this.nowNum;
+         TetrisData.relaxNextNum = this.nextNum;
+         TetrisData.relaxScore = this.score;
+         TetrisData.relaxLevel = this.level;
+         TetrisData.relaxSpeed = this.speed;
+         TetrisData.relaxLevelNum = this.levelNum;
+         TetrisData.relaxRecord = true;
       }
-      GameState.save(GameData);
+      GameData.save();
    },
 
    clearRecord: function () {
       if (this.scene.autoDown)
-         GameData.playRecord = false;
+         TetrisData.playRecord = false;
       else
-         GameData.relaxRecord = false;
-      GameState.save(GameData);
+         TetrisData.relaxRecord = false;
+      GameData.save();
    },
 
    start: function () {
@@ -235,11 +238,10 @@ var TetrisLayer = cc.Layer.extend({
          this.generateTestBlock();
       }
 
-      this.score = 0
-      this.level = 1
-      this.speed = 1
-      this.levelNum = 64
-      this.scene = this.getParent();
+      this.score = 0;
+      this.level = 1;
+      this.speed = 1;
+      this.levelNum = 64;
       this.scene.scoreLabel.setString("0");
       this.nowNum = 0;
       if (this.nowPic != null) {
@@ -258,8 +260,8 @@ var TetrisLayer = cc.Layer.extend({
       var str = "" + this.score;
       this.scene.scoreLabel.setString(str);
       var pt = this.getBlockPosition(subIdx);
-      var px = display.width * 0.5 - COL * BASESIZE * 0.5;
-      var py = display.height * 0.5 - ROW * BASESIZE * 0.5;
+      var px = cx - COL * BASESIZE * 0.5;
+      var py = cy - ROW * BASESIZE * 0.5;
       var score = new cc.LabelTTF(
          "+" + mergeNum,
          "Arial",
@@ -278,23 +280,23 @@ var TetrisLayer = cc.Layer.extend({
       score.runAction(action);
    },
    move: function (orient) {
-      console.log("move", orient);
-      var pos = this.pos(self.nowPic.idx);
+      // console.log("move", orient);
+      var pos = this.pos(this.nowPic.idx);
       var x = pos.x;
       var y = pos.y;
       if (orient == "left") {
          if (x != 1 && this.block[this.nowPic.idx - 1].num == 0)
-            x = x - 1
+            x = x - 1;
          else
             return;
       }
       else if (orient == "right") {
          if (x != COL && this.block[this.nowPic.idx + 1].num == 0)
-            x = x + 1
+            x = x + 1;
          else
             return;
       }
-      // --if GameData.music then audio.playEffect(SOUND.move) end
+      // --if GameData.music then audio.playEffect(res.smove) end
       this.setNowNumPos(x, y);
    },
    dropOneRow: function () {
@@ -306,7 +308,7 @@ var TetrisLayer = cc.Layer.extend({
          return
       }
 
-      if (y == ROW && x == math.ceil(COL / 2)) {
+      if (y == ROW && x == Math.ceil(COL / 2)) {
          if (this.block[this.nowPic.idx - COL].num != this.nowNum) {
             this.scene.gameOver();
             return;
@@ -314,17 +316,16 @@ var TetrisLayer = cc.Layer.extend({
       }
       gameState = "DROP";
       var idx = this.nowPic.idx;
-      this.block[idx].num = this.nowNum
-      this.block[idx].pic = this.nowPic
+      this.block[idx].num = this.nowNum;
+      this.block[idx].pic = this.nowPic;
       this.checkMerge([this.nowPic.idx]);
    },
    drop: function () {
-      console.log("drop");
-
+      // console.log("drop");
       gameState = "DROP";
       var block = this.block;
       var stopY = ROW;
-      var pos = this.pos(self.nowPic.idx);
+      var pos = this.pos(this.nowPic.idx);
       var x = pos.x;
       var y = pos.y;
       for (var row = ROW; row >= 1; row--) {
@@ -337,37 +338,37 @@ var TetrisLayer = cc.Layer.extend({
             stopY = 1;
          }
       }
-      if (stopY == ROW && x == math.ceil(COL / 2)) {
+      if (stopY == ROW && x == Math.ceil(COL / 2)) {
          if (block[this.nowPic.idx - COL].num != this.nowNum) {
             this.scene.gameOver();
-            return
+            return;
          }
       }
 
-      // --[[
-      // this.setNowNumPos(x,stopY)
-      // var idx = this.idx(x,stopY)
-      // block[idx].num = self.nowNum
-      // block[idx].pic = self.nowPic
-      // this.checkMerge({idx})
-      // --]]
-      // ---[[
-      var idx = this.idx(x, stopY);
-      var _this = this;
-      var action = cc.sequence(
-         cc.moveTo((y - stopY) * BASESIZE / DROPSPEED, this.getBlockPosition(idx)),
-         cc.callFunc(function () {
-            _this.nowPic.idx = idx;
-            _this.nowPic.setPosition(_this.getBlockPosition(idx));
-            _this.block[idx].num = _this.nowNum;
-            _this.block[idx].pic = _this.nowPic;
-            _this.checkMerge([idx]);
-         })
-      );
-      this.nowPic.runAction(action);
+      if (1) {
+         this.setNowNumPos(x, stopY);
+         var idx = this.idx(x, stopY);
+         block[idx].num = this.nowNum;
+         block[idx].pic = this.nowPic;
+         this.checkMerge([idx]);
+      } else {
+         var idx = this.idx(x, stopY);
+         var _this = this;
+         var action = cc.sequence(
+            cc.moveTo((y - stopY) * BASESIZE / DROPSPEED, this.getBlockPosition(idx)),
+            cc.callFunc(function () {
+               _this.nowPic.idx = idx;
+               _this.nowPic.setPosition(_this.getBlockPosition(idx));
+               _this.block[idx].num = _this.nowNum;
+               _this.block[idx].pic = _this.nowPic;
+               _this.checkMerge([idx]);
+            })
+         );
+         this.nowPic.runAction(action);
+      }
    },
    light: function (idx) {
-      var pos = self.getBlockPosition(idx);
+      var pos = this.getBlockPosition(idx);
       var light = new cc.LayerColor(cc.color(255, 255, 255, 0));
       this.addChild(light);
       light.setContentSize(CCSize(BASESIZE, BASESIZE))
@@ -426,11 +427,11 @@ var TetrisLayer = cc.Layer.extend({
       //console.log(idxes);
       var mergeNumers = this.mergeNumers = {};
       this.mergeCount = {}
-      var needMerge = this.needMerge = {}; //需要合成的点
+      var needMerge = this.needMerge = []; //需要合成的点
       for (var i = 0; i < idxes.length; i++) {
          var idx = idxes[i];
          if (this.block[idx].num != 0) {
-            mergeNumers[idx] = {}; //检查点上的相邻相同数
+            mergeNumers[idx] = []; //检查点上的相邻相同数
             this.getNearbySameNumbers(idx, idx);
             //console.log(this.mergeNumers[idx]);
             if (mergeNumers[idx].length >= 2) {
@@ -444,7 +445,7 @@ var TetrisLayer = cc.Layer.extend({
       if (needMergeCount == 0) {
          gameState = "RUN";
          if (!noDown) {
-            if (GameData.music) audio.playEffect(SOUND.down);
+            if (GameData.music) audio.playEffect(res.sdown);
 
          }
          this.sendNumer();
@@ -459,7 +460,7 @@ var TetrisLayer = cc.Layer.extend({
          this.merge(needMerge[i], function () {
             _this.checkCount = _this.checkCount - 1;
             if (PrintTest) {
-               console.log("AllMerge count.." + (this.checkCount + 1) + "->" + _this.checkCount);
+               console.log("AllMerge count.." + (_this.checkCount + 1) + "->" + _this.checkCount);
             }
             if (_this.checkCount == 0) {
                _this.sortAfterMerge();
@@ -477,97 +478,99 @@ var TetrisLayer = cc.Layer.extend({
          return;
       }
       var mergeNumers = this.mergeNumers;
+      var mergeDatas = mergeNumers[idx];
       var mergeCount = this.mergeCount;
       var block = this.block;
 
       if (PrintTest) {
          var str = "MergeIdx:";
-         for (var i = 0; i < mergeNumers[idx].length; i++) {
-            str = str + self.mergeNumers[idx][i] + ",";
+         for (var i = 0; i < mergeDatas.length; i++) {
+            str = str + mergeDatas[i] + ",";
          }
          console.log(str);
       }
 
-      mergeCount[idx] = mergeNumers[idx].length;
+      mergeCount[idx] = mergeDatas.length;
       if (mergeCount[idx] == 2) {
          if (GameData.music) {
-            audio.playEffect(SOUND.merge1);
+            audio.playEffect(res.smerge1);
          }
       }
       else if (mergeCount[idx] == 3) {
          if (GameData.music) {
-            audio.playEffect(SOUND.merge2);
+            audio.playEffect(res.smerge2);
          }
       }
       else {
          if (GameData.music) {
-            audio.playEffect(SOUND.merge3);
+            audio.playEffect(res.smerge3);
          }
       }
-      var mergeNum = block[idx].num * math.pow(2, mergeNumers[idx].length - 1);
+      var _this = this;
+      var mergeNum = block[idx].num * Math.pow(2, mergeDatas.length - 1);
       var num = this.nowNum;
-      for (var i = 0; i < mergeNumers[idx]; i++) {
-         var subIdx = mergeNumers[idx][i];
+      for (var i = 0; i < mergeDatas.length; i++) {
+         var subIdx = mergeDatas[i];
          var action = null;
          if (subIdx != idx) { //被合成块闪一下就消失。
             block[subIdx].num = 0;
-            action = cc.sequence(
-               //CCScaleTo:create(0.1, 1.1),
-               //CCScaleTo:create(0.1, 1),
-               cc.fadeTo(0.1, 128),
-               cc.FadeTo(0.1, 255),
-               cc.callFunc(function () {
-                  block[subIdx].pic.removeFromParent(true);
-                  block[subIdx] = { num: 0, pic: null };
-                  mergeCount[idx] = mergeCount[idx] - 1;
-                  if (PrintTest) {
-                     console.log("mergeIdx:" + idx + " count.." + (mergeCount[idx] + 1) + "->" + mergeCount[idx]);
-                  }
-                  if (mergeCount[idx] == 0) {
-                     callback();
-                  }
-               })
-            );
+            (function (subIdx) {
+               action = cc.sequence(
+                  cc.fadeTo(0.1, 128),
+                  cc.fadeTo(0.1, 255),
+                  cc.callFunc(function () {
+                     block[subIdx].pic.removeFromParent(true);
+                     block[subIdx] = { num: 0, pic: null };
+                     mergeCount[idx] = mergeCount[idx] - 1;
+                     if (PrintTest) {
+                        console.log("mergeIdx:" + idx + " count.." + (mergeCount[idx] + 1) + "->" + mergeCount[idx]);
+                     }
+                     if (mergeCount[idx] == 0) {
+                        callback();
+                     }
+                  })
+               );
+            })(subIdx);
          }
          else { //合成块闪一下，再变成新块再放大一下。
-            action = cc.sequence(
-               //CCScaleTo:create(0.1, 1.1),
-               //CCScaleTo:create(0.1, 1),
-               cc.fadeTo(0.1, 128),
-               cc.fadeTo(0.1, 255),
-               cc.callFunc(function () {
-                  block[subIdx].pic.removeFromParent(true);
-                  block[subIdx].num = mergeNum;
-                  block[subIdx].pic = _this.getNumerSprite(mergeNum, subIdx);
-                  block[subIdx].pic.runAction(cc.sequence(
-                     cc.callFunc(function () {
-                        //加分
-                        _this: addScore(subIdx, mergeNum)
-                        //判断等级
-                        while (mergeNum > _this.levelNum) {
-                           _this.level = _this.level + 1;
-                           _this.speed = _this.speed * 0.85;
-                           _this.levelNum = _this.levelNum * 2;
-                           //_this.scene.levelLabel.setString("Lv "+_this.level);
-                        }
-                     }),
-                     cc.scaleTo(0.1, 1.1),
-                     cc.scaleTo(0.1, 1),
-                     cc.callFunc(function () {
-                        //block[subIdx].pic:removeFromParentAndCleanup(true)
-                        //block[subIdx].num = mergeNum
-                        //block[subIdx].pic = this.getNumerSprite(mergeNum,subIdx)
-                        mergeCount[idx] = mergeCount[idx] - 1;
-                        if (PrintTest) {
-                           console.log("mergeIdx:" + idx + " count.." + (mergeCount[idx] + 1) + "->" + mergeCount[idx]);
-                        }
-                        if (mergeCount[idx] == 0) {
-                           callback();
-                        }
-                     })
-                  ));
-               })
-            );
+            (function (subIdx) {
+               action = cc.sequence(
+                  cc.fadeTo(0.1, 128),
+                  cc.fadeTo(0.1, 255),
+                  cc.callFunc(function () {
+                     block[subIdx].pic.removeFromParent(true);
+                     block[subIdx].num = mergeNum;
+                     block[subIdx].pic = _this.getNumerSprite(mergeNum, subIdx);
+                     block[subIdx].pic.runAction(cc.sequence(
+                        cc.callFunc(function () {
+                           //加分
+                           _this.addScore(subIdx, mergeNum)
+                           //判断等级
+                           while (mergeNum > _this.levelNum) {
+                              _this.level = _this.level + 1;
+                              _this.speed = _this.speed * 0.85;
+                              _this.levelNum = _this.levelNum * 2;
+                              //_this.scene.levelLabel.setString("Lv "+_this.level);
+                           }
+                        }),
+                        cc.scaleTo(0.1, 1.1),
+                        cc.scaleTo(0.1, 1),
+                        cc.callFunc(function () {
+                           //block[subIdx].pic.removeFromParentAndCleanup(true)
+                           //block[subIdx].num = mergeNum
+                           //block[subIdx].pic = this.getNumerSprite(mergeNum,subIdx)
+                           mergeCount[idx] = mergeCount[idx] - 1;
+                           if (PrintTest) {
+                              console.log("mergeIdx:" + idx + " count.." + (mergeCount[idx] + 1) + "->" + mergeCount[idx]);
+                           }
+                           if (mergeCount[idx] == 0) {
+                              callback();
+                           }
+                        })
+                     ));
+                  })
+               );
+            })(subIdx);
          }
          block[subIdx].pic.runAction(action);
       }
@@ -579,9 +582,9 @@ var TetrisLayer = cc.Layer.extend({
 
       //console.log("sortAfterMerge");
       var downNumbers = this.downNumbers = [];
-      for (var col = 0; col < COL; col++) {
+      for (var col = 1; col <= COL; col++) {
          var blank = false;
-         for (var row = 0; row < ROW; row++) {
+         for (var row = 1; row <= ROW; row++) {
             var idx = this.idx(col, row);
             if (block[idx].num == 0) {
                blank = true;
@@ -592,7 +595,7 @@ var TetrisLayer = cc.Layer.extend({
          }
       }
       //合成点有可能不需要掉落，也得再次检查合成
-      var addCheckNumbers = {}
+      var addCheckNumbers = [];
       for (var i = 0; i < needMerge.length; i++) {
          var has = false;
          for (var k in downNumbers) {
@@ -615,11 +618,11 @@ var TetrisLayer = cc.Layer.extend({
       this.downCount = downNumbersCount;
       var _this = this;
       for (var i = 0; i < downNumbersCount; i++) {
-         var idx = self.downNumbers[i];
+         var idx = downNumbers[i];
          var downIdx = idx - COL;
          //有可能往下掉好几格
          while (downIdx - COL > 0) {
-            if (self.block[downIdx - COL].num == 0)
+            if (block[downIdx - COL].num == 0)
                downIdx = downIdx - COL;
             else
                break;
@@ -633,7 +636,7 @@ var TetrisLayer = cc.Layer.extend({
             cc.callFunc(function () {
                _this.downCount = _this.downCount - 1;
                if (_this.downCount == 0) {
-                  for (var j = 0; 0 < addCheckNumbers.length; j++) {
+                  for (var j = 0; j < addCheckNumbers.length; j++) {
                      //严重bug，重复了。gxj提出来的。
                      var downHas = false;
                      for (var k = 0; k < downNumbers.length; k++) {
@@ -646,7 +649,7 @@ var TetrisLayer = cc.Layer.extend({
                         downNumbers.push(addCheckNumbers[j]);
                      }
                   }
-                  this.checkMerge(downNumbers);
+                  _this.checkMerge(downNumbers);
                }
             })
          );

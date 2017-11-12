@@ -16,10 +16,11 @@ var PlayScene = cc.Scene.extend({
       tetris.setAnchorPoint(cc.p(0.5, 0.5));
       tetris.ignoreAnchorPointForPosition(false);
       this.addChild(tetris);
+      tetris.scene = this;
 
       //开始
-      this.start();
       tetris.getNextNumer();
+      this.start();
 
       cc.eventManager.addListener({
          event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -28,7 +29,10 @@ var PlayScene = cc.Scene.extend({
          onTouchMoved: this.onTouchMoved.bind(this),
          onTouchEnded: this.onTouchEnded.bind(this),
       }, this);
-
+      cc.eventManager.addListener({
+         event: cc.EventListener.KEYBOARD,
+         onKeyPressed: this.onKeyPressed.bind(this),
+      }, this);
    },
    init: function () {
       var _this = this;
@@ -48,6 +52,9 @@ var PlayScene = cc.Scene.extend({
             MainScene.main();
          });
       returnButton.attr({ x: left + 60, y: height - 50 });
+      var menu1 = this.menu1 = new cc.Menu(returnButton);
+      menu1.attr({ x: 0, y: 0 });
+      this.addChild(menu1);
       // 暂停按钮
       var suspendButton = this.suspendButton = new cc.MenuItemImage(
          res.stop1,
@@ -59,10 +66,9 @@ var PlayScene = cc.Scene.extend({
             _this.suspend();
          });
       suspendButton.attr({ x: right - 60, y: height - 50 });
-
-      var menu = this.menu = new cc.Menu(returnButton, suspendButton);
-      menu.attr({ x: 0, y: 0 });
-      this.addChild(menu);
+      var menu2 = this.menu2 = new cc.Menu(suspendButton);
+      menu2.attr({ x: 0, y: 0 });
+      this.addChild(menu2);
 
 
       //RELAX标记
@@ -70,12 +76,12 @@ var PlayScene = cc.Scene.extend({
          var relaxLabel = this.relaxLabel = new cc.LabelTTF(
             "RELAX",
             "Arial-BoldMT",
-            28,
+            22,
             null,
             cc.TEXT_ALIGNMENT_CENTER
          );
          relaxLabel.attr({
-            x: cx - 155,
+            x: Math.max(cx - 180, left + 120),
             y: height - 50,
             color: cc.color(255, 254, 194),
          })
@@ -94,14 +100,14 @@ var PlayScene = cc.Scene.extend({
 
       // --等级
       // --[[
-      //    self.levelLabel = ui.newTTFLabel({
+      //    this.levelLabel = ui.newTTFLabel({
       //       text = "Lv 1",
       //       size = 50,
       //       align = ui.TEXT_ALIGN_CENTER,
       //       x = 100,
       //       y = display.height - 100
       //    })
-      // self: addChild(self.levelLabel)
+      // this: addChild(this.levelLabel)
       // --]]
       // 下一块
       var nextSprite = new cc.Sprite(res.next);
@@ -112,8 +118,8 @@ var PlayScene = cc.Scene.extend({
       var _this = this;
       this.unscheduleUpdate();
       this.isSuspend = true;
-      this.menu.setEnabled(false);
-      var suspendLayer = new cc.Node();
+      this.menu2.setEnabled(false);
+      var suspendLayer = this.suspendLayer = new cc.Node();
       this.addChild(suspendLayer, 3);
       var bg = new cc.Sprite(res.p3);
       bg.attr({ x: cx, y: cy });
@@ -126,14 +132,17 @@ var PlayScene = cc.Scene.extend({
             if (GameData.music) {
                audio.playEffect(res.sbutton);
             }
-            _this.menu.setEnabled(true);
-            _this.scheduleUpdate();
-            _this.isSuspend = false;
-            suspendLayer.removeFromParent(true);
+            _this.resumeGame();
          });
       // resumeButton.attr({ x: cx, y: cy });
       this.resumeMenu = new cc.Menu(resumeButton);
       suspendLayer.addChild(this.resumeMenu);
+   },
+   resumeGame: function () {
+      this.menu2.setEnabled(true);
+      this.scheduleUpdate();
+      this.isSuspend = false;
+      this.suspendLayer.removeFromParent(true);
    },
    setNext: function (num) {
       if (this.nextPic) {
@@ -159,7 +168,7 @@ var PlayScene = cc.Scene.extend({
       if (!this.touchControl)
          this.moveTime = this.moveTime + dt;
 
-      var tetris = tetris;
+      var tetris = this.tetris;
       // 自动掉落模式
       if (this.autoDown) {
          tetris.passTime = tetris.passTime + dt;
@@ -167,6 +176,23 @@ var PlayScene = cc.Scene.extend({
             tetris.passTime = 0;
             tetris.dropOneRow();
          }
+      }
+   },
+   onKeyPressed: function (keyCode, event) {
+      // console.log(keyCode);
+      if (keyCode == 32 || keyCode == 13) {//空格或回车
+         if (!this.isSuspend)
+            this.suspend();
+         else
+            this.resumeGame();
+      }
+      if (this.isSuspend || gameState != "RUN") return;
+      if (keyCode == 37) {
+         this.tetris.move("left");
+      } else if (keyCode == 39) {
+         this.tetris.move("right");
+      } else if (keyCode == 40) {
+         this.tetris.drop();
       }
    },
    onTouchBegan: function (touch, event) {
@@ -220,7 +246,7 @@ var PlayScene = cc.Scene.extend({
       // else{
       //    --[[1.2.1取消点击最下一行掉落
       // 	if y < display.height * 0.5 - ROW * BASESIZE * 0.5 + BASESIZE  then
-      // self.tetris: drop()
+      // this.tetris: drop()
       //    else]]
       // }
       if (this.moveTime < 0.5) {
@@ -234,22 +260,22 @@ var PlayScene = cc.Scene.extend({
    },
    share: function () {
 
-      //       if self.autoDown then
+      //       if this.autoDown then
       //       luaoc.callStaticMethod("AppController", "share",
-      //          { relax = false, score = self.tetris.score })
+      //          { relax = false, score = this.tetris.score })
       // else
       //    luaoc.callStaticMethod("AppController", "share",
-      //          { relax = true, score = self.tetris.score })
+      //          { relax = true, score = this.tetris.score })
       // end
    },
    gameOver: function () {
       var tetris = this.tetris;
       this.tetris.clearRecord();
       this.unscheduleUpdate();
-      if (GameData.music) audio.playEffect(SOUND.dead);
+      if (GameData.music) audio.playEffect(res.sdead);
       gameState = "GAMEOVER";
       //禁掉按钮
-      this.menu.setEnabled(false);
+      this.menu2.setEnabled(false);
 
       var overLayer = new cc.Node();
       this.addChild(overLayer, 3);
@@ -270,16 +296,14 @@ var PlayScene = cc.Scene.extend({
       overLayer.addChild(scoreLabel);
       if (this.autoDown) {
          //最高分
-         GameData.high = GameData.high || 0
          if (tetris.score > GameData.high) {
-            GameData.high = tetris.score;
+            GameData.set("high", tetris.score);
          }
       }
       else {
          //休闲最高分
-         GameData.relaxHigh = GameData.relaxHigh || 0
          if (tetris.score > GameData.relaxHigh) {
-            GameData.relaxHigh = tetris.score;
+            GameData.set("relaxHigh", tetris.score);
          }
       }
       //best
@@ -310,7 +334,7 @@ var PlayScene = cc.Scene.extend({
          }
       );
       returnButton.attr({ x: cx - 150, y: cy - 120 });
-
+      returnButton.setScale(0);
 
       var _this = this;
       //againButton
@@ -323,11 +347,12 @@ var PlayScene = cc.Scene.extend({
             }
             overLayer.removeFromParent(true);
             //启用按钮
-            _this.menu.setEnabled(true);
+            _this.menu2.setEnabled(true);
             _this.start();
          }
       );
       againButton.attr({ x: cx, y: cy - 120 });
+      againButton.setScale(0);
 
       //shareButton
       var shareButton = new cc.MenuItemImage(
@@ -341,12 +366,12 @@ var PlayScene = cc.Scene.extend({
          }
       );
       shareButton.attr({ x: cx + 150, y: cy - 120 });
+      shareButton.setScale(0);
 
-      this.overMenu = cc.Menu(returnButton, againButton, shareButton);
-      overLayer.addChild(this.overMenu);
-
-      this.overMenu.setScale(0)
-      this.overMenu.setEnabled(false);
+      var overMenu = this.overMenu = new cc.Menu(returnButton, againButton, shareButton);
+      overLayer.addChild(overMenu);
+      overMenu.attr({ x: 0, y: 0 });
+      overMenu.setEnabled(false);
 
       bestLabel.setVisible(false);
       scoreLabel.setScale(0);
@@ -397,7 +422,7 @@ var PlayScene = cc.Scene.extend({
          }),
          cc.callFunc(function () {
             _this.scheduleOnce(function () {
-               _this.overMenu.setEnabled(true);
+               overMenu.setEnabled(true);
             }, delay);
          })
       ));
@@ -414,23 +439,20 @@ var PlayScene = cc.Scene.extend({
          //    {relax = true, score = GameData.relaxHigh})
       }
       //插页广告
-      GameData.adTime = GameData.adTime || 0
-      GameData.adTime = GameData.adTime + 1;
+      GameData.set("adTime", GameData.adTime + 1);
       if (GameData.adTime == 2) {
          // luaoc.callStaticMethod("AppController", "showAd", {
          //    callback1 = function()
-         //       self:cantTouch()
+         //       this:cantTouch()
          //    end,
          //    callback2 = function()
          //       --控制操作
-         //       self:canTouch()
+         //       this:canTouch()
          //    end})
-         GameData.adTime = 0;
+         GameData.set("adTime", 0);
       }
       //游戏次数
-      GameData.playRateTime = GameData.playRateTime || 6;
-      GameData.playRateTime = GameData.playRateTime + 1;
-      GameState.save(GameData);
+      GameData.set("playRateTime", GameData.playRateTime + 1);
    },
 });
 

@@ -52,8 +52,6 @@
  *
  */
 
-var GameState = cc.sys.localStorage;
-var GameData = { music: true, high: 3583244 };
 var audio;
 var size;
 var left;
@@ -63,37 +61,47 @@ var cx;
 var cy;
 
 cc.game.onStart = function () {
-    audio = cc.audioEngine;
+   audio = cc.audioEngine;
 
-    var sys = cc.sys;
-    if (!sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
-        document.body.removeChild(document.getElementById("cocosLoading"));
+   var sys = cc.sys;
+   if (!sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
+      document.body.removeChild(document.getElementById("cocosLoading"));
 
-    // Pass true to enable retina display, on Android disabled by default to improve performance
-    cc.view.enableRetina(sys.os === sys.OS_IOS ? true : false);
+   // Pass true to enable retina display, on Android disabled by default to improve performance
+   cc.view.enableRetina(sys.os === sys.OS_IOS ? true : false);
 
-    // Disable auto full screen on baidu and wechat, you might also want to eliminate sys.BROWSER_TYPE_MOBILE_QQ
-    if (sys.isMobile &&
-        sys.browserType !== sys.BROWSER_TYPE_BAIDU &&
-        sys.browserType !== sys.BROWSER_TYPE_WECHAT) {
-        cc.view.enableAutoFullScreen(true);
-    }
+   // Disable auto full screen on baidu and wechat, you might also want to eliminate sys.BROWSER_TYPE_MOBILE_QQ
+   if (sys.isMobile &&
+      sys.browserType !== sys.BROWSER_TYPE_BAIDU &&
+      sys.browserType !== sys.BROWSER_TYPE_WECHAT) {
+      cc.view.enableAutoFullScreen(true);
+   }
 
-    // Adjust viewport meta
-    cc.view.adjustViewPort(true);
+   // Adjust viewport meta
+   cc.view.adjustViewPort(true);
 
-    // Uncomment the following line to set a fixed orientation for your game
-    // cc.view.setOrientation(cc.ORIENTATION_PORTRAIT);
+   // Uncomment the following line to set a fixed orientation for your game
+   // cc.view.setOrientation(cc.ORIENTATION_PORTRAIT);
 
-    // Setup the resolution policy and design resolution size
-    cc.view.setDesignResolutionSize(640, 960, cc.ResolutionPolicy.FIXED_HEIGHT);
+   // Setup the resolution policy and design resolution size
+   cc.view.setDesignResolutionSize(640, 960, cc.ResolutionPolicy.FIXED_HEIGHT);
 
-    // The game will be resized when browser size change
-    cc.view.resizeWithBrowserSize(true);
+   // The game will be resized when browser size change
+   cc.view.resizeWithBrowserSize(true);
 
-    //load resources
-    cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new MainScene());
-    }, this);
+
+   // 初始化
+   GameData.init();
+   size = cc.director.getWinSize();
+   left = size.width > 720 ? (size.width - 720) / 2 : 0;
+   right = size.width > 720 ? (size.width + 720) / 2 : size.width;
+   cx = size.width / 2;
+   cy = size.height / 2;
+   height = size.height;
+
+   //load resources
+   cc.LoaderScene.preload(g_resources, function () {
+      cc.director.runScene(new MainScene());
+   }, this);
 };
 cc.game.run();
