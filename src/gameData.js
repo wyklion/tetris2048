@@ -8,7 +8,7 @@ var GameData = {
       this.rate = parseInt(this.get("rate")) || 0;
       this.playRateTime = parseInt(this.get("playRateTime")) || 6;
       this.adTime = parseInt(this.get("adTime")) || 0;
-      TetrisData = this.tetris = JSON.parse(this.get("v") || "{}");
+      TetrisData = this.tetris = JSON.parse(this.get("tetris") || "{}");
    },
    set: function (key, value) {
       this[key] = value;
