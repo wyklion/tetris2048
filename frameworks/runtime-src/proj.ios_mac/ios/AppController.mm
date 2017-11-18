@@ -28,6 +28,8 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
 #import <GoogleMobileAds/GoogleMobileAds.h>
+#import "GCHelper.h"
+#import "InAppPurchaseManager.h"
 
 @implementation AppController
 
@@ -38,6 +40,34 @@
 
 // cocos2d application instance
 static AppDelegate s_sharedApplication;
+
+static bool chinese = true;
+static AppController *sharedAppController = nil;
++(id)instance{
+    return sharedAppController;
+}
+
+#pragma mark -
+#pragma mark GameCenter
++(void)showLeaderboard{
+    [[GCHelper sharedInstance] showLeaderboard];
+}
++(void)commitScore:(NSDictionary *)dict{
+    bool relax = false;
+    if ([dict objectForKey:@"relax"])
+    {
+        relax = [[dict objectForKey:@"relax"] boolValue];
+    }
+    int score = 0;
+    if ([dict objectForKey:@"score"])
+    {
+        score = [[dict objectForKey:@"score"] intValue];
+    }
+    if(relax)
+        [[GCHelper sharedInstance] commitScore:@"tetrisRelaxTopScore" value:score];
+    else
+        [[GCHelper sharedInstance] commitScore:@"tetrisTopScore" value:score];
+}
 
 -(void)initAds
 {
@@ -79,6 +109,7 @@ static AppDelegate s_sharedApplication;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    sharedAppController = self;
     
     cocos2d::Application *app = cocos2d::Application::getInstance();
     

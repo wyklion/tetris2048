@@ -131,13 +131,16 @@ var MainScene = cc.Scene.extend({
     * 排行榜按钮
     */
    showLeaderboard: function () {
-      MainScene.cantConnect();
+      if (cc.sys.os === cc.sys.OS_IOS) {
+         jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
+      }
    },
    /** 
     * 去广告按钮
     */
    removeAds: function () {
-      MainScene.showSuccessRemoveAds();
+      // MainScene.showSuccessRemoveAds();
+      // this.showRate();
    },
    /** 
     * 去广告
@@ -149,10 +152,72 @@ var MainScene = cc.Scene.extend({
     * 评价
     */
    showRate: function () {
+      var bg = cc.Sprite.create(cc.sys.language == "zh" ? res.p41 : resizeBy.p41E);
+      bg.attr({ x: cx, y: height });
+      this.addChild(bg, 10);
+      bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
 
+      var y = 185
+
+      var dismissFunc = function () {
+         bg.runAction(cc.sequence(
+            cc.moveTo(1, cc.p(cx, height)).easing(cc.easeElasticIn()),
+            cc.callFunc(function () {
+               bg.removeFromParent(true);
+            }),
+         ));
+         _this.setEnable(true);
+      }
+
+      var _this = this;
+      // 去评价
+      var rateButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p43 : resizeBy.p43E,
+         null,
+         function () {
+            // luaoc.callStaticMethod("AppController", "rate2", {})
+            dismissFunc();
+         }
+      );
+      rateButton.attr({ x: 62, y: y });
+      rateButton.setAnchorPoint(cc.p(0, 0.5));
+
+      // 下次吧
+      var nextTimeButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p44 : resizeBy.p44E,
+         null,
+         dismissFunc
+      );
+      nextTimeButton.attr({ x: 62, y: y - 67 });
+      nextTimeButton.setAnchorPoint(cc.p(0, 0.5));
+
+      //不去
+      var neverButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p45 : resizeBy.p45E,
+         null,
+         function () {
+            GameData.set("rate", -1);
+            dismissFunc();
+         }
+      );
+      neverButton.attr({ x: 62, y: y - 134 });
+      neverButton.setAnchorPoint(cc.p(0, 0.5));
+
+      // 关闭
+      var xButton = new cc.MenuItemImage(
+         res.p42,
+         null,
+         dismissFunc
+      );
+      xButton.attr({ x: 335, y: 300 });
+      xButton.setAnchorPoint(cc.p(0.5, 0.5));
+
+      var menu = new cc.Menu(rateButton, nextTimeButton, neverButton, xButton);
+      menu.attr({ x: 0, y: 0 });
+      bg.addChild(menu);
    },
    rate: function () {
-      if (GameData.rate)
+      if (GameData.rate == 0)
          this.showRate();
    },
 });
