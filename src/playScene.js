@@ -196,21 +196,22 @@ var PlayScene = cc.Scene.extend({
       }
    },
    onTouchBegan: function (touch, event) {
-      if (this.isSuspend || gameState != "RUN") return;
+      if (this.isSuspend || gameState != "RUN") return false;
       this.touchControl = true;
       this.moveTime = 0;
       this.moved = false;
       this.moveDx = 0;
-      this.touchPos = touch.getLocationInView();
-      return false;
+      this.touchPos = touch.getLocation();
+      return true;
 
    },
    onTouchMoved: function (touch, event) {
       // 移动当前按钮精灵的坐标位置
       var target = event.getCurrentTarget();
-      var delta = touch.getDelta();
-      var dx = delta.x;
-      var dy = delta.y;
+      var pos = touch.getLocation();
+      var dx = pos.x - this.touchPos.x;
+      var dy = pos.y - this.touchPos.y;
+      // console.log("move:", dx, dy);
       if (Math.abs(dy) > Math.abs(dx))
          return;
 
@@ -243,18 +244,19 @@ var PlayScene = cc.Scene.extend({
       if (dy < -BASESIZE * 0.5) {
          this.tetris.drop();
       }
-      // else{
-      //    --[[1.2.1取消点击最下一行掉落
-      // 	if y < display.height * 0.5 - ROW * BASESIZE * 0.5 + BASESIZE  then
-      // this.tetris: drop()
-      //    else]]
-      // }
-      if (this.moveTime < 0.5) {
-         if (x < cx) {
-            this.tetris.move("left");
-         }
-         else {
-            this.tetris.move("right");
+      else {
+         //    --[[1.2.1取消点击最下一行掉落
+         // 	if y < display.height * 0.5 - ROW * BASESIZE * 0.5 + BASESIZE  then
+         // this.tetris: drop()
+         //    else]]
+         // }
+         if (this.moveTime < 0.5) {
+            if (pos.x < cx) {
+               this.tetris.move("left");
+            }
+            else {
+               this.tetris.move("right");
+            }
          }
       }
    },

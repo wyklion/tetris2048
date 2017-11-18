@@ -30,7 +30,7 @@
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #import "GCHelper.h"
 #import "InAppPurchaseManager.h"
-//#import "scripting/js-bindings/manual/ScriptingCore.h"
+#import "scripting/js-bindings/manual/ScriptingCore.h"
 #import "XYAlertViewHeader.h"
 
 @implementation AppController
@@ -55,7 +55,7 @@ static AppController *sharedAppController = nil;
     std::string param001 = [contentStr UTF8String];
     std::string jsCallStr = cocos2d::StringUtils::format("%s(\"%s\");", funcName.c_str(), param001.c_str());
     NSLog(@"jsCallStr = %s", jsCallStr.c_str());
-//    ScriptingCore::getInstance()->evalString(jsCallStr.c_str());
+    ScriptingCore::getInstance()->evalString(jsCallStr.c_str());
 }
 
 #pragma mark -
