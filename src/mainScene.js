@@ -104,12 +104,14 @@ var MainScene = cc.Scene.extend({
          null,
          function () {
             if (GameData.music) {
-               _this.musicButton.setNormalSpriteFrame(res.p1sound2);
+               var frame = cc.spriteFrameCache.getSpriteFrame(res.p1sound2);
+               _this.musicButton.setNormalSpriteFrame(frame);
                GameData.set("music", 0);
                audio.stopMusic();
             } else {
                audio.playEffect(res.sbutton);
-               _this.musicButton.setNormalSpriteFrame(res.p1sound1);
+               var frame = cc.spriteFrameCache.getSpriteFrame(res.p1sound1);
+               _this.musicButton.setNormalSpriteFrame(frame);
                GameData.set("music", 1);
                // audio.playMusic("sound/tetrisMusic.mp3", isLoop)
             }
@@ -139,14 +141,97 @@ var MainScene = cc.Scene.extend({
     * 去广告按钮
     */
    removeAds: function () {
-      // MainScene.showSuccessRemoveAds();
-      // this.showRate();
+      this.showRemoveAds();
+      //    luaoc.callStaticMethod("AppController", "connectStore", {
+      //       callback1 = function()
+      //          self:setDisable()
+      //       end,
+      //       callback2 = function()
+      //          self:setEnable()
+      //       end,
+      //       callbackShow = function()
+      //          self:showRemoveAds()
+      //       end,
+      //       callbackCant = function()
+      //          MainScene.cantConnect()
+      //       end,
+      // })
    },
    /** 
     * 去广告
     */
    showRemoveAds: function () {
+      var bg = cc.Sprite.create(res.p1shopW1);
+      bg.attr({ x: cx, y: height });
+      this.addChild(bg, 10);
+      bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
 
+      var y = 217;
+      var _this = this;
+      var dismissFunc = function () {
+         bg.runAction(cc.sequence(
+            cc.moveTo(1, cc.p(cx, height)).easing(cc.easeElasticIn()),
+            cc.callFunc(function () {
+               bg.removeFromParent(true);
+            })
+         ));
+         _this.setEnable(true);
+      }
+
+      // 移除广告
+      var removeButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p1shopW3 : res.p1shopW3E,
+         null,
+         function () {
+            if (cc.sys.os === cc.sys.OS_IOS) {
+
+               //   luaoc.callStaticMethod("AppController", "payForLua", {
+               //    callSuccess = function ()
+               //              MainScene.showSuccessRemoveAds()
+               //          end
+               // })
+            }
+            dismissFunc();
+         }
+      );
+      removeButton.attr({ x: 44, y: y });
+      removeButton.setAnchorPoint(cc.p(0, 0.5));
+
+      // 恢复购买
+      var restoreButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p1shopW4 : res.p1shopW4E,
+         null,
+         function () {
+            if (cc.sys.os === cc.sys.OS_IOS) {
+               //   luaoc.callStaticMethod("AppController", "restoreForLua", {
+               // })
+            }
+            dismissFunc();
+         }
+      );
+      restoreButton.attr({ x: 50, y: y - 78 });
+      restoreButton.setAnchorPoint(cc.p(0, 0.5));
+
+      // 取消
+      var cancelButton = new cc.MenuItemImage(
+         cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E,
+         null,
+         dismissFunc
+      );
+      cancelButton.attr({ x: 54, y: y - 151 });
+      cancelButton.setAnchorPoint(cc.p(0, 0.5));
+
+      // 关闭
+      var xButton = new cc.MenuItemImage(
+         res.p1shopW2,
+         null,
+         dismissFunc
+      );
+      xButton.attr({ x: 420, y: 280 });
+
+      var menu = new cc.Menu(removeButton, restoreButton, cancelButton, xButton)
+      menu.attr({ x: 0, y: 0 });
+      bg.addChild(menu);
    },
    /** 
     * 评价
@@ -157,25 +242,26 @@ var MainScene = cc.Scene.extend({
       this.addChild(bg, 10);
       bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
 
-      var y = 185
-
+      var y = 185;
+      var _this = this;
       var dismissFunc = function () {
          bg.runAction(cc.sequence(
             cc.moveTo(1, cc.p(cx, height)).easing(cc.easeElasticIn()),
             cc.callFunc(function () {
                bg.removeFromParent(true);
-            }),
+            })
          ));
          _this.setEnable(true);
       }
 
-      var _this = this;
       // 去评价
       var rateButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p43 : resizeBy.p43E,
+         cc.sys.language == "zh" ? res.p43 : res.p43E,
          null,
          function () {
-            // luaoc.callStaticMethod("AppController", "rate2", {})
+            if (cc.sys.os === cc.sys.OS_IOS) {
+               jsb.reflection.callStaticMethod("AppController", "rate2");
+            }
             dismissFunc();
          }
       );
@@ -184,7 +270,7 @@ var MainScene = cc.Scene.extend({
 
       // 下次吧
       var nextTimeButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p44 : resizeBy.p44E,
+         cc.sys.language == "zh" ? res.p44 : res.p44E,
          null,
          dismissFunc
       );
@@ -193,7 +279,7 @@ var MainScene = cc.Scene.extend({
 
       //不去
       var neverButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p45 : resizeBy.p45E,
+         cc.sys.language == "zh" ? res.p45 : res.p45E,
          null,
          function () {
             GameData.set("rate", -1);
