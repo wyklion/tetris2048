@@ -431,12 +431,14 @@ var PlayScene = cc.Scene.extend({
    afterGameover: function () {
       //gamecenter最高分
       if (this.autoDown) {
-         // luaoc.callStaticMethod("AppController", "commitScore", 
-         //    {relax = false, score = GameData.high})
+         if (cc.sys.os === cc.sys.OS_IOS) {
+            jsb.reflection.callStaticMethod("AppController", "commitScore", { relax: false, score: GameData.high });
+         }
       }
       else {
-         // luaoc.callStaticMethod("AppController", "commitScore", 
-         //    {relax = true, score = GameData.relaxHigh})
+         if (cc.sys.os === cc.sys.OS_IOS) {
+            jsb.reflection.callStaticMethod("AppController", "commitScore", { relax: true, score: GameData.relaxHigh });
+         }
       }
       //插页广告
       GameData.set("adTime", GameData.adTime + 1);

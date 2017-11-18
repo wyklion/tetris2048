@@ -30,6 +30,8 @@
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #import "GCHelper.h"
 #import "InAppPurchaseManager.h"
+//#import "scripting/js-bindings/manual/ScriptingCore.h"
+#import "XYAlertViewHeader.h"
 
 @implementation AppController
 
@@ -45,6 +47,15 @@ static bool chinese = true;
 static AppController *sharedAppController = nil;
 +(id)instance{
     return sharedAppController;
+}
+
+-(void)callJsEngineCallBack:(NSString*) funcNameStr withContent:(NSString*) contentStr
+{
+    std::string funcName = [funcNameStr UTF8String];
+    std::string param001 = [contentStr UTF8String];
+    std::string jsCallStr = cocos2d::StringUtils::format("%s(\"%s\");", funcName.c_str(), param001.c_str());
+    NSLog(@"jsCallStr = %s", jsCallStr.c_str());
+//    ScriptingCore::getInstance()->evalString(jsCallStr.c_str());
 }
 
 #pragma mark -
@@ -68,6 +79,83 @@ static AppController *sharedAppController = nil;
     else
         [[GCHelper sharedInstance] commitScore:@"tetrisTopScore" value:score];
 }
+
+#pragma mark -
+#pragma mark IAP
+
++(void)testRestoreAds:(NSDictionary *)dict
+{
+    //测试去除广告
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isRemoveAdsPurchased" ];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++(void)removeButton
+{
+    [[AppController instance] buyRemoveAds];
+}
++(void)restoreButton
+{
+    [[InAppPurchaseManager sharedInstance] restorePay];
+}
+
+
+static XYLoadingView* loadingView = nil;
++(void)connectStore
+{
+    [[InAppPurchaseManager sharedInstance] requestProducts];
+
+
+    NSString* msg = @"正在连接...";
+    if(!chinese)
+        msg = @"Connecting...";
+    loadingView = XYShowLoading(msg);
+}
+
+-(void)connectedStore:(BOOL)ok
+{
+    [loadingView dismiss ];
+    if(ok)
+    {
+        [[AppController instance] callJsEngineCallBack:@"showRemoveAds" withContent:@"ok"];
+    }
+    else
+    {
+        [[AppController instance] callJsEngineCallBack:@"cantConnect" withContent:@"fail"];
+    }
+}
+
+-(void)buyRemoveAds
+{
+    bool canPay = [[InAppPurchaseManager sharedInstance] canMakePurchases];
+    if (canPay) {
+        //NSLog(@"允许程序内付费购买");
+        //[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+        [[InAppPurchaseManager sharedInstance] purchaseRemoveAds];
+    }
+    else
+    {
+        //NSLog(@"不允许程序内付费购买");
+        UIAlertView *alerView =  [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
+                                                            message:NSLocalizedString(@"CANTPURCHASE",nil)
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Close",nil)
+                                                  otherButtonTitles:nil];
+        [alerView show];
+        [alerView release];
+    }
+}
+-(void)removeAds
+{
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isRemoveAdsPurchased" ];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    isRemovedAds = true;
+    [bannerView release];
+    //不提示了。。[[AppController instance] luaCallback:successFuncId];
+}
+
+#pragma mark -
+#pragma mark AD
 
 -(void)initAds
 {
@@ -93,7 +181,7 @@ static AppController *sharedAppController = nil;
     // Requests test ads on devices you specify. Your test device ID is printed to the console when
     // an ad request is made. GADBannerView automatically returns test ads when running on a
     // simulator.
-    //request.testDevices = @[ kGADSimulatorID ];
+    request.testDevices = @[ kGADSimulatorID ];
     [_viewController.view addSubview:bannerView];
     [bannerView loadRequest:request];
     
@@ -150,6 +238,12 @@ static AppController *sharedAppController = nil;
     //run the cocos2d-x game scene
     app->run();
 
+    
+    //gamecenter
+    [[GCHelper sharedInstance] authenticateLocalUser];
+    
+    //IAP
+    [[InAppPurchaseManager sharedInstance] loadStore];
     
     //AdMob 广告
     isRemovedAds = [[NSUserDefaults standardUserDefaults] boolForKey:@"isRemoveAdsPurchased" ];
