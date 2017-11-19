@@ -24,15 +24,17 @@
  ****************************************************************************/
 
 #import <UIKit/UIKit.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 @class GADBannerView;
+@class GADInterstitial;
 @class RootViewController;
 
-@interface AppController : NSObject <UIApplicationDelegate> {
+@interface AppController : NSObject <UIApplicationDelegate, GADInterstitialDelegate> {
     GADBannerView* bannerView;
     BOOL isRemovedAds;
 }
-
+@property(nonatomic, strong) GADInterstitial *interstitial;
 @property(nonatomic, readonly) RootViewController* viewController;
 
 @end

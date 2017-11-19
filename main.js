@@ -63,6 +63,9 @@ var cy;
 cc.game.onStart = function () {
    audio = cc.audioEngine;
 
+   //测试语言
+   // cc.sys.language = "abc";
+
    var sys = cc.sys;
    if (!sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
       document.body.removeChild(document.getElementById("cocosLoading"));

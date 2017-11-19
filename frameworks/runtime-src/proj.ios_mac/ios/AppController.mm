@@ -27,10 +27,9 @@
 #import "cocos2d.h"
 #import "AppDelegate.h"
 #import "RootViewController.h"
-#import <GoogleMobileAds/GoogleMobileAds.h>
 #import "GCHelper.h"
 #import "InAppPurchaseManager.h"
-#import "scripting/js-bindings/manual/ScriptingCore.h"
+//#import "scripting/js-bindings/manual/ScriptingCore.h"
 #import "XYAlertViewHeader.h"
 
 @implementation AppController
@@ -55,7 +54,7 @@ static AppController *sharedAppController = nil;
     std::string param001 = [contentStr UTF8String];
     std::string jsCallStr = cocos2d::StringUtils::format("%s(\"%s\");", funcName.c_str(), param001.c_str());
     NSLog(@"jsCallStr = %s", jsCallStr.c_str());
-    ScriptingCore::getInstance()->evalString(jsCallStr.c_str());
+//    ScriptingCore::getInstance()->evalString(jsCallStr.c_str());
 }
 
 #pragma mark -
@@ -63,21 +62,12 @@ static AppController *sharedAppController = nil;
 +(void)showLeaderboard{
     [[GCHelper sharedInstance] showLeaderboard];
 }
-+(void)commitScore:(NSDictionary *)dict{
-    bool relax = false;
-    if ([dict objectForKey:@"relax"])
-    {
-        relax = [[dict objectForKey:@"relax"] boolValue];
-    }
-    int score = 0;
-    if ([dict objectForKey:@"score"])
-    {
-        score = [[dict objectForKey:@"score"] intValue];
-    }
++(void)commitScore:(NSNumber*) score withRelax:(bool )relax{
+    int scoreInt = [score intValue];
     if(relax)
-        [[GCHelper sharedInstance] commitScore:@"tetrisRelaxTopScore" value:score];
+        [[GCHelper sharedInstance] commitScore:@"tetrisRelaxTopScore" value:scoreInt];
     else
-        [[GCHelper sharedInstance] commitScore:@"tetrisTopScore" value:score];
+        [[GCHelper sharedInstance] commitScore:@"tetrisTopScore" value:scoreInt];
 }
 
 #pragma mark -
@@ -155,7 +145,27 @@ static XYLoadingView* loadingView = nil;
 }
 
 #pragma mark -
-#pragma mark AD
+#pragma mark ShareSDK
+
++(void)rate{
+    //NSString * appstoreUrlString = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?mt=8&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software&id=841846341";
+    NSString * appstoreUrlString = @"https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8";
+    
+    NSURL * url = [NSURL URLWithString:appstoreUrlString];
+    
+    if ([[UIApplication sharedApplication] canOpenURL:url])
+    {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+    else
+    {
+        NSLog(@"can not open");
+    }
+    [appstoreUrlString release];
+}
+
+#pragma mark -
+#pragma mark AdMob
 
 -(void)initAds
 {
@@ -193,8 +203,47 @@ static XYLoadingView* loadingView = nil;
      usingWindow:window
      initialImage:[UIImage imageNamed:@"Default.png"]];*/
     
-    //[self showInterstitial];
+    self.interstitial = [self createAndLoadInterstitial];
 }
+
++(void)showAd{
+    [[AppController instance] showInterstitial];
+}
+-(void)showInterstitial {
+    if(isRemovedAds)
+        return;
+    //NSLog(@"showInterstitial...");
+    if ([self.interstitial isReady]) {
+        [self.interstitial presentFromRootViewController:_viewController];
+    }
+}
+
+- (GADInterstitial*)createAndLoadInterstitial {
+    GADInterstitial *interstitial =interstitial = [[GADInterstitial alloc] initWithAdUnitID:@"ca-app-pub-1261971577301251/9095351327"];
+    interstitial.delegate = self;
+    [interstitial loadRequest:[GADRequest request]];
+    return interstitial;
+}
+
+- (void)interstitialDidReceiveAd:(GADInterstitial *)interstitial {
+    //NSLog(@"receiveAd...");
+//    [interstitial presentFromRootViewController:_viewController];
+}
+- (void)interstitial:(GADInterstitial *)interstitial
+didFailToReceiveAdWithError:(GADRequestError *)error {
+    // Alert the error.
+    /*UIAlertView *alert = [[[UIAlertView alloc]
+     initWithTitle:@"GADRequestError"
+     message:[error localizedDescription]
+     delegate:nil cancelButtonTitle:@"Drat"
+     otherButtonTitles:nil] autorelease];
+     [alert show];*/
+}
+- (void)interstitialDidDismissScreen:(GADInterstitial *)ad{
+    [ad release];
+    self.interstitial = [self createAndLoadInterstitial];
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     sharedAppController = self;

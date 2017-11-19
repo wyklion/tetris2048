@@ -312,7 +312,8 @@ var MainScene = cc.Scene.extend({
     * 评价
     */
    showRate: function () {
-      var bg = cc.Sprite.create(cc.sys.language == "zh" ? res.p41 : resizeBy.p41E);
+      this.setEnable(false);
+      var bg = cc.Sprite.create(cc.sys.language == "zh" ? res.p41 : res.p41E);
       bg.attr({ x: cx, y: height });
       this.addChild(bg, 10);
       bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
@@ -335,7 +336,7 @@ var MainScene = cc.Scene.extend({
          null,
          function () {
             if (cc.sys.os === cc.sys.OS_IOS) {
-               jsb.reflection.callStaticMethod("AppController", "rate2");
+               jsb.reflection.callStaticMethod("AppController", "rate");
             }
             dismissFunc();
          }

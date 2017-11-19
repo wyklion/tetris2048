@@ -238,7 +238,7 @@ var PlayScene = cc.Scene.extend({
       this.touchControl = false
       if (this.moved)
          return;
-      var pos = touch.getLocationInView();
+      var pos = touch.getLocation();
       var dx = pos.x - this.touchPos.x;
       var dy = pos.y - this.touchPos.y;
       if (dy < -BASESIZE * 0.5) {
@@ -434,26 +434,23 @@ var PlayScene = cc.Scene.extend({
       //gamecenter最高分
       if (this.autoDown) {
          if (cc.sys.os === cc.sys.OS_IOS) {
-            jsb.reflection.callStaticMethod("AppController", "commitScore", { relax: false, score: GameData.high });
+            jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.high, false);
+         }
+         //插页广告
+         GameData.set("adTime", GameData.adTime + 1);
+         if (GameData.adTime == 2) {
+            if (cc.sys.os === cc.sys.OS_IOS) {
+               jsb.reflection.callStaticMethod("AppController", "showAd");
+            }
+            GameData.set("adTime", 0);
          }
       }
       else {
          if (cc.sys.os === cc.sys.OS_IOS) {
-            jsb.reflection.callStaticMethod("AppController", "commitScore", { relax: true, score: GameData.relaxHigh });
+            jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.relaxHigh, true);
+            //插页广告
+            jsb.reflection.callStaticMethod("AppController", "showAd");
          }
-      }
-      //插页广告
-      GameData.set("adTime", GameData.adTime + 1);
-      if (GameData.adTime == 2) {
-         // luaoc.callStaticMethod("AppController", "showAd", {
-         //    callback1 = function()
-         //       this:cantTouch()
-         //    end,
-         //    callback2 = function()
-         //       --控制操作
-         //       this:canTouch()
-         //    end})
-         GameData.set("adTime", 0);
       }
       //游戏次数
       GameData.set("playRateTime", GameData.playRateTime + 1);
