@@ -261,14 +261,9 @@ var PlayScene = cc.Scene.extend({
       }
    },
    share: function () {
-
-      //       if this.autoDown then
-      //       luaoc.callStaticMethod("AppController", "share",
-      //          { relax = false, score = this.tetris.score })
-      // else
-      //    luaoc.callStaticMethod("AppController", "share",
-      //          { relax = true, score = this.tetris.score })
-      // end
+      if (cc.sys.os === cc.sys.OS_IOS) {
+         jsb.reflection.callStaticMethod("AppController", "share:relax:", this.tetris.score, !this.autoDown);
+      }
    },
    gameOver: function () {
       var tetris = this.tetris;

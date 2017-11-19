@@ -73,8 +73,7 @@ var MainScene = cc.Scene.extend({
          );
          highScore.attr({
             x: cx,
-            y: 150,
-            color: cc.color(209, 180, 121)
+            y: 150
          })
          this.addChild(highScore);
       }

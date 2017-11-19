@@ -1,12 +1,39 @@
 PODS:
   - Google-Mobile-Ads-SDK (7.25.0)
+  - MOBFoundation (3.0.2)
+  - ShareSDK3 (4.0.2):
+    - MOBFoundation
+    - ShareSDK3/ShareSDK (= 4.0.2)
+  - ShareSDK3/ShareSDK (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKPlatforms/Facebook (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKPlatforms/QQ (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKPlatforms/SinaWeibo (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKPlatforms/Twitter (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKPlatforms/WeChat (4.0.2):
+    - MOBFoundation
+  - ShareSDK3/ShareSDKUI (4.0.2):
+    - MOBFoundation
 
 DEPENDENCIES:
   - Google-Mobile-Ads-SDK
+  - ShareSDK3
+  - ShareSDK3/ShareSDKPlatforms/Facebook
+  - ShareSDK3/ShareSDKPlatforms/QQ
+  - ShareSDK3/ShareSDKPlatforms/SinaWeibo
+  - ShareSDK3/ShareSDKPlatforms/Twitter
+  - ShareSDK3/ShareSDKPlatforms/WeChat
+  - ShareSDK3/ShareSDKUI
 
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 113804f266381a30f982ad3c18063d4e0155414f
+  MOBFoundation: d5e27c4638d911d3c7501aa5df458955d4814359
+  ShareSDK3: a01a35da3cd8f4d10d7f4394c7c42f8113392182
 
-PODFILE CHECKSUM: c5e3de4f7fde20963ab9e36c2df1ad1763ad938d
+PODFILE CHECKSUM: 2ad8cc4569e406a69e333d9cf5cb3f7da258f616
 
 COCOAPODS: 1.3.1

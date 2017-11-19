@@ -32,6 +32,17 @@
 //#import "scripting/js-bindings/manual/ScriptingCore.h"
 #import "XYAlertViewHeader.h"
 
+#import <ShareSDK/ShareSDK.h>
+//Links Native SDK use
+#import <ShareSDKConnector/ShareSDKConnector.h>
+#import <ShareSDKUI/ShareSDKUI.h>
+//QQ SDK header file
+#import <TencentOpenAPI/TencentOAuth.h>
+#import <TencentOpenAPI/QQApiInterface.h>
+//Wechat SDK header file
+#import "WXApi.h"
+//SinaWeibo SDK header file
+#import "WeiboSDK.h"
 @implementation AppController
 
 @synthesize window;
@@ -149,6 +160,7 @@ static XYLoadingView* loadingView = nil;
 
 +(void)rate{
     //NSString * appstoreUrlString = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?mt=8&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software&id=841846341";
+//    NSString * appstoreUrlString = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?mt=8&pageNumber=0&sortOrdering=2&type=Purple+Software&id=841846341";
     NSString * appstoreUrlString = @"https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8";
     
     NSURL * url = [NSURL URLWithString:appstoreUrlString];
@@ -166,7 +178,6 @@ static XYLoadingView* loadingView = nil;
 
 #pragma mark -
 #pragma mark AdMob
-
 -(void)initAds
 {
     
@@ -244,6 +255,195 @@ didFailToReceiveAdWithError:(GADRequestError *)error {
     self.interstitial = [self createAndLoadInterstitial];
 }
 
+#pragma mark -
+#pragma mark Share
+
+static UIView* ipadShareView = NULL;
+-(void)initShare
+{
+    // 给pad用
+    CGSize size = [_viewController.view frame].size;
+    CGRect CGone = CGRectMake(size.width*0.7, size.height*0.55, 1, 1);
+    ipadShareView = [[UIView alloc]initWithFrame:CGone];//初始化view
+    [_viewController.view addSubview:ipadShareView];
+    
+    [ShareSDK registerActivePlatforms:@[
+                                        @(SSDKPlatformTypeFacebook),
+                                        @(SSDKPlatformTypeTwitter),
+                                        @(SSDKPlatformTypeSinaWeibo),
+                                        @(SSDKPlatformTypeWechat),
+                                        @(SSDKPlatformTypeQQ)
+                                        ]
+                             onImport:^(SSDKPlatformType platformType)
+     {
+         switch (platformType)
+         {
+             case SSDKPlatformTypeWechat:
+                 [ShareSDKConnector connectWeChat:[WXApi class]];
+                 break;
+             case SSDKPlatformTypeQQ:
+                 [ShareSDKConnector connectQQ:[QQApiInterface class] tencentOAuthClass:[TencentOAuth class]];
+                 break;
+             case SSDKPlatformTypeSinaWeibo:
+                 [ShareSDKConnector connectWeibo:[WeiboSDK class]];
+                 break;
+             default:
+                 break;
+         }
+     }
+                      onConfiguration:^(SSDKPlatformType platformType, NSMutableDictionary *appInfo)
+     {
+         switch (platformType)
+         {
+             case SSDKPlatformTypeSinaWeibo:
+                 //设置新浪微博应用信息,其中authType设置为使用SSO＋Web形式授权
+                 [appInfo SSDKSetupSinaWeiboByAppKey:@"1960161340"
+                                           appSecret:@"821082da1087d5d55125298e0749af9e"
+                                         redirectUri:@"http://weibo.com/wyklion"
+                                            authType:SSDKAuthTypeBoth];
+                 break;
+             case SSDKPlatformTypeWechat:
+                 [appInfo SSDKSetupWeChatByAppId:@"wxbdb65b9957734479"
+                                       appSecret:@"8da8407de1388b800dafd3974a1331f4"];
+                 break;
+             case SSDKPlatformTypeQQ:
+                 [appInfo SSDKSetupQQByAppId:@"1106468597"
+                                      appKey:@"YVKZIZYAtvyIBtD3"
+                                    authType:SSDKAuthTypeBoth];
+                 break;
+             case SSDKPlatformTypeFacebook:
+                 [appInfo SSDKSetupFacebookByApiKey:@"796226687054431"
+                                          appSecret:@"df38b0ef92743effc7d8c4908b8f5af6"
+                                        displayName:@"shareSDK"
+                                           authType:SSDKAuthTypeBoth];
+                 break;
+             case SSDKPlatformTypeTwitter:
+                 [appInfo SSDKSetupTwitterByConsumerKey:@"a5X76UcuKV16SKDUxGMbNsFPe"
+                                         consumerSecret:@"4rJnu077y50vDyYyUqXKjakEbKXCiUnVdsCN6VutHc9wLk2fVN"
+                                            redirectUri:@"http://www.douban.com/people/wyklion"];
+                 break;
+             default:
+                 break;
+         }
+     }];
+}
+
++(void)share: (NSNumber*) scoreNumber relax: (bool) relax{
+    int score = [scoreNumber intValue];
+    NSString* strLanguage = [[[NSUserDefaults standardUserDefaults] objectForKey:@"AppleLanguages"] objectAtIndex:0];
+    bool chinese = [strLanguage hasPrefix:@"zh"];
+    
+    //分享界面 选项
+    NSString* titleStr = nil;
+    if(chinese)
+        titleStr = @"俄罗斯方块2048";
+    else
+        titleStr = @"Number Combo";
+    
+    //加入分享的图片
+    NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"Icon-512"  ofType:@"png"];
+    
+    //构造分享内容
+    NSString* str = nil;
+    if(chinese)
+    {
+        if(relax)
+            str = [NSString stringWithFormat:@"我在玩俄罗斯方块2048，休闲模式得分%d。你还不来试试？https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8", score];
+        else
+            str = [NSString stringWithFormat:@"我在玩俄罗斯方块2048，得分%d。你还不来试试？https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8", score];
+    }
+    else
+    {
+        if(relax)
+            str = [NSString stringWithFormat:@"Got %d points in relax mode in Number Combo - Tetris 2048! Have a try？https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8", score];
+        else
+            str = [NSString stringWithFormat:@"Got %d points in Number Combo - Tetris 2048! Have a try？https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8", score];
+    }
+    
+    //要分享的列表
+    NSArray *shareList = nil;
+    if(chinese)
+        shareList = @[@(SSDKPlatformSubTypeWechatSession),
+                      @(SSDKPlatformSubTypeWechatTimeline),
+                      @(SSDKPlatformTypeSinaWeibo),
+                      @(SSDKPlatformSubTypeQQFriend),
+                      @(SSDKPlatformTypeFacebook),
+                      @(SSDKPlatformTypeTwitter)];
+    else
+        shareList = @[@(SSDKPlatformTypeFacebook),
+                      @(SSDKPlatformTypeTwitter),
+                      @(SSDKPlatformSubTypeWechatSession),
+                      @(SSDKPlatformSubTypeWechatTimeline),
+                      @(SSDKPlatformTypeSinaWeibo)];
+    
+    //1、创建分享参数
+    NSArray* imageArray = @[[UIImage imageNamed:imagePath]];
+    if (imageArray) {
+        NSMutableDictionary *shareParams = [NSMutableDictionary dictionary];
+        [shareParams SSDKSetupShareParamsByText:str
+                                         images:imageArray
+                                            url:[NSURL URLWithString:@"https://itunes.apple.com/us/app/tetris2048/id875196147?ls=1&mt=8"]
+                                          title:titleStr
+                                           type:SSDKContentTypeAuto];
+        //2、分享（可以弹出我们的分享菜单和编辑界面）
+        [ShareSDK showShareActionSheet:ipadShareView //要显示菜单的视图, iPad版中此参数作为弹出菜单的参照视图，只有传这个才可以弹出我们的分享菜单，可以传分享的按钮对象或者自己创建小的view 对象，iPhone可以传nil不会影响
+                                 items:shareList
+                           shareParams:shareParams
+                   onShareStateChanged:^(SSDKResponseState state, SSDKPlatformType platformType, NSDictionary *userData, SSDKContentEntity *contentEntity, NSError *error, BOOL end) {
+                       switch (state) {
+                           case SSDKResponseStateSuccess:
+                           {
+                               UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:(chinese ? @"分享成功" : @"Success")
+                                                                                   message:nil
+                                                                                  delegate:nil
+                                                                         cancelButtonTitle:(chinese ? @"确定" : @"OK")
+                                                                         otherButtonTitles:nil];
+                               [alertView show];
+                               break;
+                           }
+                           case SSDKResponseStateFail:
+                           {
+                               UIAlertView *alert = [[UIAlertView alloc] initWithTitle:(chinese ? @"分享失败" : @"Failed")
+                                                                               message:[NSString stringWithFormat:@"%@",error]
+                                                                              delegate:nil
+                                                                     cancelButtonTitle:(chinese ? @"确定" : @"OK")
+                                                                     otherButtonTitles:nil, nil];
+                               [alert show];
+                               break;
+                           }
+                           default:
+                               break;
+                       }
+                   }];
+    }
+                       
+//    //分享的 底ViewControoler
+//    id<ISSContainer> container = [ShareSDK container];
+//
+//    //可以 设置 sharesdk 弹出的底ViewController
+//    //[container setIPhoneContainerWithViewController:nil];
+//    [container setIPadContainerWithView:ipadShareView arrowDirect:UIPopoverArrowDirectionDown];
+//
+//    //自动授权
+//    id<ISSAuthOptions> authOptions = [ShareSDK authOptionsWithAutoAuth:YES
+//                                                         allowCallback:NO
+//                                                         authViewStyle:SSAuthViewStyleModal
+//                                                          viewDelegate:nil
+//                                               authManagerViewDelegate:nil];
+//
+//
+//    id<ISSShareOptions> shareOptions = [ShareSDK defaultShareOptionsWithTitle:titleStr
+//                                                              oneKeyShareList:shareList
+//                                                               qqButtonHidden:YES
+//                                                        wxSessionButtonHidden:NO
+//                                                       wxTimelineButtonHidden:NO
+//                                                         showKeyboardOnAppear:NO
+//                                                            shareViewDelegate:nil
+//                                                          friendsViewDelegate:nil
+//                                                        picViewerViewDelegate:nil];
+//
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     sharedAppController = self;
@@ -298,6 +498,9 @@ didFailToReceiveAdWithError:(GADRequestError *)error {
     isRemovedAds = [[NSUserDefaults standardUserDefaults] boolForKey:@"isRemoveAdsPurchased" ];
     if(!isRemovedAds)
         [self initAds];
+    
+    //分享
+    [self initShare];
     
     return YES;
 }
