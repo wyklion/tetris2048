@@ -72,7 +72,8 @@ static InAppPurchaseManager *sharedIapManager = nil;
     // finally release the reqest we alloc/init’ed in requestProUpgradeProductData
     [productsRequest release];
     
-    [[AppController instance] connectedStore:YES];
+    [[AppController instance] buyRemoveAds];
+//    [[AppController instance] connectedStore:YES];
     [[NSNotificationCenter defaultCenter] postNotificationName:kInAppPurchaseManagerProductsFetchedNotification object:self userInfo:nil];
 }
 
@@ -86,12 +87,13 @@ static InAppPurchaseManager *sharedIapManager = nil;
 
 //弹出错误信息
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error{
-    /*NSLog(@"-------弹出错误信息----------");
+    NSLog(@"-------弹出错误信息----------");
     UIAlertView *alerView =  [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",NULL) message:[error localizedDescription]
                                                        delegate:nil cancelButtonTitle:NSLocalizedString(@"Close",nil) otherButtonTitles:nil];
     [alerView show];
-    [alerView release];*/
-    [[AppController instance] connectedStore:NO];
+    [alerView release];
+    [[AppController instance] dismissLoadingView];
+//    [[AppController instance] connectedStore:NO];
 }
 
 #pragma -
@@ -124,7 +126,6 @@ static InAppPurchaseManager *sharedIapManager = nil;
 //
 - (void)recordTransaction:(SKPaymentTransaction *)transaction
 {
-    
     if ([transaction.payment.productIdentifier isEqualToString:kInAppPurchaseRemoveAdsProductId])
     {
         // save the transaction receipt to disk
@@ -162,6 +163,7 @@ static InAppPurchaseManager *sharedIapManager = nil;
     {
         // send out a notification for the failed transaction
         [[NSNotificationCenter defaultCenter] postNotificationName:kInAppPurchaseManagerTransactionFailedNotification object:self userInfo:userInfo];
+        [[AppController instance] connectStoreFail];
     }
 }
 //
@@ -182,6 +184,7 @@ static InAppPurchaseManager *sharedIapManager = nil;
     [self provideContent:transaction.originalTransaction.payment.productIdentifier];
     [self finishTransaction:transaction wasSuccessful:YES];
 }
+
 //
 // called when a transaction has failed
 //

@@ -12,8 +12,9 @@ var TetrisLayer = cc.Layer.extend({
    generateTestBlock: function () {
       for (var k in testCase) {
          var v = testCase[k];
-         this.block[k].num = v;
-         this.block[k].pic = this.getNumerSprite(v, k);
+         var idx = parseInt(k) - 1;
+         this.block[idx].num = v;
+         this.block[idx].pic = this.getNumerSprite(v, idx);
       }
    },
    getNumerSprite: function (num, idx) {
@@ -21,6 +22,9 @@ var TetrisLayer = cc.Layer.extend({
       pic.setContentSize(cc.size(BASESIZE, BASESIZE));
       pic.setAnchorPoint(cc.p(0.5, 0.5));
       pic.ignoreAnchorPointForPosition(false);
+      // var pic = new cc.DrawNode();
+      // pic.drawRect(cc.p(-BASESIZE / 2, -BASESIZE / 2), cc.p(BASESIZE / 2, BASESIZE / 2), colors[num], 0);
+      // pic.setAnchorPoint(cc.p(0.5, 0.5));
       var text = "" + num;
       var size = 60;
       var len = text.length;
@@ -67,7 +71,7 @@ var TetrisLayer = cc.Layer.extend({
       pic.addChild(label);
       if (idx != null) {
          pic.setPosition(this.getBlockPosition(idx));
-         pic.idx = idx
+         pic.idx = idx;
          this.addChild(pic);
       }
       return pic;

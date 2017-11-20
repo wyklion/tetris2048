@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  tetris2048
+
+  Created by KK on 2017/11/20.
+  
+*/
+
+"Alert"="唔";
+"CONNECTFAIL"="连不上苹果商店...";
+"CANTPURCHASE"="买不了...";
+"Close"="关闭";
+"Connecting"="连接中...";

@@ -168,10 +168,12 @@ var MainScene = cc.Scene.extend({
     * 去广告按钮
     */
    removeAds: function () {
-      if (cc.sys.os === cc.sys.OS_IOS) {
-         this.setEnable(false);
-         jsb.reflection.callStaticMethod("AppController", "connectStore");
-      }
+      // 流程改了，直接显示，不从oc回调了。
+      this.showRemoveAds();
+      // if (cc.sys.os === cc.sys.OS_IOS) {
+      //    this.setEnable(false);
+      //    jsb.reflection.callStaticMethod("AppController", "connectStore");
+      // }
    },
    /** 
     * 去广告
@@ -401,13 +403,13 @@ MainScene.main = function () {
 }
 
 /**
- * ios回调接口
+ * ios回调接口，回调不了不用了
  */
 var showRemoveAds = function () {
    MainScene.instance.showRemoveAds();
 }
 /**
- * ios回调接口
+ * ios回调接口，回调不了不用了
  */
 var cantConnect = function () {
    MainScene.instance.cantConnect();

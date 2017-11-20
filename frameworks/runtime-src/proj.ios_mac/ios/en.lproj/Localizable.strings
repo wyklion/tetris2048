@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  tetris2048
+
+  Created by KK on 2017/11/20.
+  
+*/
+
+"Alert"="Alert";
+"CONNECTFAIL"="Can't connect to App Store...";
+"CANTPURCHASE"="Can't purchase...";
+"Close"="Close";
+"Connecting"="Connecting...";

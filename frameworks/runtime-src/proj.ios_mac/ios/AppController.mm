@@ -91,43 +91,64 @@ static AppController *sharedAppController = nil;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+static XYLoadingView* loadingView = nil;
 +(void)removeButton
 {
-    [[AppController instance] buyRemoveAds];
+    [[InAppPurchaseManager sharedInstance] requestProducts];
+    loadingView = XYShowLoading(NSLocalizedString(@"Connecting",nil));
+//    [[AppController instance] buyRemoveAds];
 }
 +(void)restoreButton
 {
+//    loadingView = XYShowLoading(NSLocalizedString(@"Connecting",nil));
     [[InAppPurchaseManager sharedInstance] restorePay];
 }
 
+//+(void)connectStore
+//{
+//    [[InAppPurchaseManager sharedInstance] requestProducts];
+//
+//    NSString* msg = @"正在连接...";
+//    if(!chinese)
+//        msg = @"Connecting...";
+//    loadingView = XYShowLoading(msg);
+//}
 
-static XYLoadingView* loadingView = nil;
-+(void)connectStore
+//-(void)connectedStore:(BOOL)ok
+//{
+//    [loadingView dismiss ];
+//    if(ok)
+//    {
+//        [[AppController instance] callJsEngineCallBack:@"showRemoveAds" withContent:@"ok"];
+//    }
+//    else
+//    {
+//        [[AppController instance] callJsEngineCallBack:@"cantConnect" withContent:@"fail"];
+//    }
+//}
+
+-(void)dismissLoadingView
 {
-    [[InAppPurchaseManager sharedInstance] requestProducts];
-
-
-    NSString* msg = @"正在连接...";
-    if(!chinese)
-        msg = @"Connecting...";
-    loadingView = XYShowLoading(msg);
+    if(loadingView){
+        [loadingView dismiss ];
+        loadingView = nil;
+    }
 }
-
--(void)connectedStore:(BOOL)ok
+-(void)connectStoreFail
 {
-    [loadingView dismiss ];
-    if(ok)
-    {
-        [[AppController instance] callJsEngineCallBack:@"showRemoveAds" withContent:@"ok"];
-    }
-    else
-    {
-        [[AppController instance] callJsEngineCallBack:@"cantConnect" withContent:@"fail"];
-    }
+    [self dismissLoadingView];
+    UIAlertView *alerView =  [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
+                                                        message:NSLocalizedString(@"CONNECTFAIL",nil)
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Close",nil)
+                                              otherButtonTitles:nil];
+    [alerView show];
+    [alerView release];
 }
 
 -(void)buyRemoveAds
 {
+    [self dismissLoadingView];
     bool canPay = [[InAppPurchaseManager sharedInstance] canMakePurchases];
     if (canPay) {
         //NSLog(@"允许程序内付费购买");
@@ -202,7 +223,7 @@ static XYLoadingView* loadingView = nil;
     // Requests test ads on devices you specify. Your test device ID is printed to the console when
     // an ad request is made. GADBannerView automatically returns test ads when running on a
     // simulator.
-    request.testDevices = @[ kGADSimulatorID ];
+//    request.testDevices = @[ kGADSimulatorID ];
     [_viewController.view addSubview:bannerView];
     [bannerView loadRequest:request];
     
