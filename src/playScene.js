@@ -127,7 +127,7 @@ var PlayScene = cc.Scene.extend({
       // 继续按钮
       var resumeButton = new cc.MenuItemImage(
          res.p3stop,
-         null,
+         res.p3stop,
          function () {
             if (GameData.music) {
                audio.playEffect(res.sbutton);

@@ -43,6 +43,10 @@
 #import "WXApi.h"
 //SinaWeibo SDK header file
 #import "WeiboSDK.h"
+
+#import "MTA.h"
+#import "MTAConfig.h"
+
 @implementation AppController
 
 @synthesize window;
@@ -522,6 +526,9 @@ static UIView* ipadShareView = NULL;
     
     //分享
     [self initShare];
+    
+    //mta统计
+    [MTA startWithAppkey:@"IFS6SLQ1S68P"];
     
     return YES;
 }

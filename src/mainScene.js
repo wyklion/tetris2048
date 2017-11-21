@@ -77,6 +77,20 @@ var MainScene = cc.Scene.extend({
          })
          this.addChild(highScore);
       }
+      if (GameData.relaxHigh != 0) {
+         var highScore = this.highScore = new cc.LabelTTF(
+            "RELAX HIGH SCORE:" + GameData.relaxHigh,
+            "Arial",
+            24,
+            null,
+            cc.TEXT_ALIGNMENT_CENTER
+         );
+         highScore.attr({
+            x: cx,
+            y: 120
+         })
+         this.addChild(highScore);
+      }
    },
    /**
     * 排行／去广告／声音开关
@@ -197,10 +211,12 @@ var MainScene = cc.Scene.extend({
          _this.setEnable(true);
       }
 
+      var img;
       // 移除广告
+      img = cc.sys.language == "zh" ? res.p1shopW3 : res.p1shopW3E;
       var removeButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p1shopW3 : res.p1shopW3E,
-         null,
+         img,
+         img,
          function () {
             if (cc.sys.os === cc.sys.OS_IOS) {
                jsb.reflection.callStaticMethod("AppController", "removeButton");
@@ -212,9 +228,10 @@ var MainScene = cc.Scene.extend({
       removeButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 恢复购买
+      img = cc.sys.language == "zh" ? res.p1shopW4 : res.p1shopW4E;
       var restoreButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p1shopW4 : res.p1shopW4E,
-         null,
+         img,
+         img,
          function () {
             if (cc.sys.os === cc.sys.OS_IOS) {
                jsb.reflection.callStaticMethod("AppController", "restoreButton");
@@ -226,9 +243,10 @@ var MainScene = cc.Scene.extend({
       restoreButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 取消
+      img = cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E;
       var cancelButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E,
-         null,
+         img,
+         img,
          dismissFunc
       );
       cancelButton.attr({ x: 54, y: y - 151 });
@@ -237,7 +255,7 @@ var MainScene = cc.Scene.extend({
       // 关闭
       var xButton = new cc.MenuItemImage(
          res.p1shopW2,
-         null,
+         res.p1shopW2,
          dismissFunc
       );
       xButton.attr({ x: 420, y: 280 });
@@ -265,7 +283,7 @@ var MainScene = cc.Scene.extend({
       var image = cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E;
       var cancelButton = new cc.MenuItemImage(
          image,
-         null,
+         image,
          closeFunc
       );
       cancelButton.setPosition(54, 150);
@@ -274,7 +292,7 @@ var MainScene = cc.Scene.extend({
       // 关闭按钮
       var xButton = new cc.MenuItemImage(
          res.p1shopW2,
-         null,
+         res.p1shopW2,
          closeFunc
       );
       xButton.attr({ x: 420, y: 280 });
@@ -293,7 +311,7 @@ var MainScene = cc.Scene.extend({
       // 关闭按钮
       var xButton = new cc.MenuItemImage(
          res.p1shopW7,
-         null,
+         res.p1shopW7,
          function () {
             var action = cc.moveTo(1, cc.p(cx, height)).easing(cc.easeElasticIn());
             var func = cc.callFunc(function () { bg.removeFromParent(true) });
@@ -331,10 +349,12 @@ var MainScene = cc.Scene.extend({
          _this.setEnable(true);
       }
 
+      var img;
       // 去评价
+      img = cc.sys.language == "zh" ? res.p43 : res.p43E;
       var rateButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p43 : res.p43E,
-         null,
+         img,
+         img,
          function () {
             if (cc.sys.os === cc.sys.OS_IOS) {
                jsb.reflection.callStaticMethod("AppController", "rate");
@@ -346,18 +366,20 @@ var MainScene = cc.Scene.extend({
       rateButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 下次吧
+      img = cc.sys.language == "zh" ? res.p44 : res.p44E;
       var nextTimeButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p44 : res.p44E,
-         null,
+         img,
+         img,
          dismissFunc
       );
       nextTimeButton.attr({ x: 62, y: y - 67 });
       nextTimeButton.setAnchorPoint(cc.p(0, 0.5));
 
       //不去
+      img = cc.sys.language == "zh" ? res.p45 : res.p45E;
       var neverButton = new cc.MenuItemImage(
-         cc.sys.language == "zh" ? res.p45 : res.p45E,
-         null,
+         img,
+         img,
          function () {
             GameData.set("rate", -1);
             dismissFunc();
@@ -369,7 +391,7 @@ var MainScene = cc.Scene.extend({
       // 关闭
       var xButton = new cc.MenuItemImage(
          res.p42,
-         null,
+         res.p42,
          dismissFunc
       );
       xButton.attr({ x: 335, y: 300 });
