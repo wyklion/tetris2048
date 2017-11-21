@@ -165,7 +165,7 @@ var PlayScene = cc.Scene.extend({
    update: function (dt) {
       if (gameState != "RUN")
          return;
-      if (!this.touchControl)
+      if (this.touchControl)
          this.moveTime = this.moveTime + dt;
 
       var tetris = this.tetris;
@@ -206,6 +206,7 @@ var PlayScene = cc.Scene.extend({
 
    },
    onTouchMoved: function (touch, event) {
+      if (this.isSuspend || gameState != "RUN") return false;
       // 移动当前按钮精灵的坐标位置
       var target = event.getCurrentTarget();
       var pos = touch.getLocation();
@@ -235,7 +236,8 @@ var PlayScene = cc.Scene.extend({
       this.moveDx = moveDx;
    },
    onTouchEnded: function (touch, event) {
-      this.touchControl = false
+      this.touchControl = false;
+      if (this.isSuspend || gameState != "RUN") return false;
       if (this.moved)
          return;
       var pos = touch.getLocation();
