@@ -70,23 +70,21 @@ function getFileListOfModule(moduleMap, moduleName, ext, dir) {
 }
 
 // some build option
-var frame_dir = "../frameworks/cocos2d-html5/";
-var module_config = require(path.join(frame_dir, "moduleConfig.json"));
-var project_dir = "../"
+var project_dir = path.resolve("../");
 var project_json = require(path.join(project_dir, "project.json"));
 var publish_dir = path.join(project_dir, "publish/" + path.basename(project_dir));
 var publish_res = path.join(publish_dir, "res");
+var frame_dir = path.join(project_dir, "frameworks/cocos2d-html5");
+var module_config = require(path.join(frame_dir, "moduleConfig.json"));
 var res_dir;
-var USE_LOADER;
-if (argv._.length > 0) {
-   USE_LOADER = argv.p ? true : false;
-}
+var USE_LOADER = argv.p ? true : false;
 var gameMinJsName = "game.min." + CurentTime() + ".js";
 if (USE_LOADER)
    gameMinJsName += "zip";
 
-//console.log("project_dir:",project_dir);
-//console.log("publish:",publish_dir);
+// console.log("project_dir:", project_dir);
+// console.log("frame_dir:", frame_dir);
+// console.log("publish_dir:", publish_dir);
 
 //compress code
 var compressCode = function () {
@@ -142,16 +140,18 @@ var htmlModify = function () {
          var dl = {
             code: [],
          }
-         dl.code.push("res/drogon.js");
+         // dl.code.push("res/drogon.js");
          dl.code.push(gameMinJsName.substring(0, gameMinJsName.length - 3));
-         insertStr += "var DROGON_LOAD=" + JSON.stringify(dl) + ";";
+         insertStr += "var JS_LOAD=" + JSON.stringify(dl) + ";";
       }
       if (insertStr)
          content = content.replace(bootRegex, "<script>" + insertStr + "</script>\n\t$1");
+      else
+         content = content.replace(bootRegex, "");
       if (USE_LOADER)
          content = content.replace(bootRegex, "");
       var mainJs = project_json["main"] ? project_json["main"] : "main.js";
-      content = content.replace(mainJs, USE_LOADER ? "res/DrogonLoader.js" : gameMinJsName);
+      content = content.replace(mainJs, USE_LOADER ? "JSLoader.js" : gameMinJsName);
       if (changeRes) { //资源目录替换
          content = content.replace(/([\"|\(])res\//g, "$1" + res_dir + "\/"); //replace res dir
       }
@@ -166,7 +166,7 @@ gulp.task("project_clean", function () {
    return gulp.src(publish_dir + "/*", { read: false })
       .pipe(clean({ force: true }));
 });
-gulp.task("project_html", function () {
+gulp.task("project_html", ["project_clean"], function () {
    gulp.src(path.join(project_dir, "project.json"), { read: false })
       .pipe(projectModify())
       .pipe(gulp.dest(path.join(publish_dir)));
@@ -178,19 +178,19 @@ gulp.task("project_html", function () {
       gulp.src(path.join("./", "JsLoader.js"))
          .pipe(uglify())
          .pipe(optimisejs())
-         .pipe(gulp.dest(path.join(publish_res)));
+         .pipe(gulp.dest(path.join(publish_dir)));
 });
-gulp.task("project_res", ["project_clean", "project_html"], function () {
+gulp.task("project_res", ["project_clean"], function () {
    gulp.src(path.join(project_dir, "res/**"))
       .pipe(gulp.dest(publish_res));
 });
-gulp.task("compileProject", ["project_res"], function () {
+gulp.task("compileProject", ["project_res", "project_html"], function () {
    jsAddedCache = {};
    //frame js...
    var jsList = [];
-   jsList.push(path.join(frame_dir, module_config[bootFile]));
+   jsList.push(path.join(frame_dir, module_config["bootFile"]));
    for (var i = 0; i < project_json["modules"].length; i++) {
-      var arr = getFileListOfModule(module_config["module"], project_json["modules"][i], ".js", engine_dir);
+      var arr = getFileListOfModule(module_config["module"], project_json["modules"][i], ".js", frame_dir);
       if (arr) jsList = jsList.concat(arr);
    }
    //game js...
@@ -205,14 +205,14 @@ gulp.task("compileProject", ["project_res"], function () {
 
    jsList = jsList.concat(gameJsList);
 
-   console.log(jsList);
+   // console.log(jsList);
    console.log("Compiling " + jsList.length + " .js files...");
-   // return merge2(gulp.src(jsList))
-   //    .pipe(concat(gameMinJsName))
-   //    .pipe(uglify())
-   //    .pipe(optimisejs())
-   //    .pipe(compressCode())
-   //    .pipe(gulp.dest(publish_dir))
+   return merge2(gulp.src(jsList))
+      .pipe(concat(gameMinJsName))
+      .pipe(uglify())
+      .pipe(optimisejs())
+      .pipe(compressCode())
+      .pipe(gulp.dest(publish_dir))
 });
 
 gulp.task('help', function () {
