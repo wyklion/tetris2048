@@ -1,0 +1,30 @@
+{
+  "name": "cocos2d_h5_compiler",
+  "version": "1.0.0",
+  "description": "cocos2d-h5 compiler is much better than python/jdk/ant/...",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cocos2d",
+    "js",
+    "compilter"
+  ],
+  "author": "kk",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-optimize-js": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.6.1",
+    "gulp-uglify": "^3.0.0",
+    "merge2": "^1.2.0",
+    "pako": "^1.0.6",
+    "through2": "^2.0.3",
+    "yargs": "^10.0.3"
+  }
+}
