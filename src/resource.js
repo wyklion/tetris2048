@@ -30,7 +30,6 @@ var res = {
    p1sound2: "res/p-1-sound2.png",
    p1: "res/p-1.png",
    p2: "res/p-2.png",
-   p3old: "res/p-3_old.png",
    p3home1: "res/p-3-home1.png",
    p3home2: "res/p-3-home2.png",
    p3retry1: "res/p-3-retry1.png",

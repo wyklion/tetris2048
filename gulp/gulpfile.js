@@ -151,7 +151,7 @@ var htmlModify = function () {
       if (USE_LOADER)
          content = content.replace(bootRegex, "");
       var mainJs = project_json["main"] ? project_json["main"] : "main.js";
-      content = content.replace(mainJs, USE_LOADER ? "JSLoader.js" : gameMinJsName);
+      content = content.replace(mainJs, USE_LOADER ? "res/JSLoader.js" : gameMinJsName);
       if (changeRes) { //资源目录替换
          content = content.replace(/([\"|\(])res\//g, "$1" + res_dir + "\/"); //replace res dir
       }
@@ -178,7 +178,7 @@ gulp.task("project_html", ["project_clean"], function () {
       gulp.src(path.join("./", "JsLoader.js"))
          .pipe(uglify())
          .pipe(optimisejs())
-         .pipe(gulp.dest(path.join(publish_dir)));
+         .pipe(gulp.dest(path.join(publish_res)));
 });
 gulp.task("project_res", ["project_clean"], function () {
    gulp.src(path.join(project_dir, "res/**"))
