@@ -1,4 +1,6 @@
 .vscode
+/publish
+node_modules
 /frameworks/cocos2d-x
 /frameworks/runtime-src/*
 !/frameworks/runtime-src/proj.ios_mac/

@@ -6,6 +6,9 @@ var MainScene = cc.Scene.extend({
       this._super();
       MainScene.instance = this;
 
+      var cache = cc.spriteFrameCache;
+      cache.addSpriteFrames(res.atlasPlist, res.atlas);
+
       this.initBg();
       this.initMenu();
       this.initSystemMenu();
