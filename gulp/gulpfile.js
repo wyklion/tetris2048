@@ -151,7 +151,8 @@ var htmlModify = function () {
       if (USE_LOADER)
          content = content.replace(bootRegex, "");
       var mainJs = project_json["main"] ? project_json["main"] : "main.js";
-      content = content.replace(mainJs, USE_LOADER ? "res/JSLoader.js" : gameMinJsName);
+      content = content.replace("script cocos", "script");
+      content = content.replace(mainJs, USE_LOADER ? "res/JsLoader.js" : gameMinJsName);
       if (changeRes) { //资源目录替换
          content = content.replace(/([\"|\(])res\//g, "$1" + res_dir + "\/"); //replace res dir
       }
