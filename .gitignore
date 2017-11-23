@@ -1,5 +1,4 @@
 .vscode
-/frameworks/cocos2d-html5
 /frameworks/cocos2d-x
 /frameworks/runtime-src/*
 !/frameworks/runtime-src/proj.ios_mac/
