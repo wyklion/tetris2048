@@ -102,6 +102,7 @@ cc.game.onStart = function () {
    cy = size.height / 2;
    height = size.height;
 
+   cc._loaderImage = null;
    //load resources
    cc.LoaderScene.preload(g_resources, function () {
       cc.director.runScene(new MainScene());
