@@ -164,8 +164,10 @@ var MainScene = cc.Scene.extend({
     * 排行榜按钮
     */
    showLeaderboard: function () {
-      if (cc.sys.os === cc.sys.OS_IOS) {
-         jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
+      if (cc.sys.isNative) {
+         if (cc.sys.os === cc.sys.OS_IOS) {
+            jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
+         }
       }
       else {
          webShow(this);

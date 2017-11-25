@@ -266,10 +266,12 @@ var PlayScene = cc.Scene.extend({
       }
    },
    share: function () {
-      if (cc.sys.os === cc.sys.OS_IOS) {
-         jsb.reflection.callStaticMethod("AppController", "share:relax:", this.tetris.score, !this.autoDown);
+      if (cc.sys.isNative) {
+         if (cc.sys.os === cc.sys.OS_IOS) {
+            jsb.reflection.callStaticMethod("AppController", "share:relax:", this.tetris.score, !this.autoDown);
+         }
       }
-      else if (!cc.sys.isNative) {
+      else {
          webShow(this);
       }
    },
@@ -436,23 +438,29 @@ var PlayScene = cc.Scene.extend({
    afterGameover: function () {
       //gamecenter最高分
       if (this.autoDown) {
-         if (cc.sys.os === cc.sys.OS_IOS) {
-            jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.high, false);
+         if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_IOS) {
+               jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.high, false);
+            }
          }
          //插页广告
          GameData.set("adTime", GameData.adTime + 1);
          if (GameData.adTime == 2) {
-            if (cc.sys.os === cc.sys.OS_IOS) {
-               jsb.reflection.callStaticMethod("AppController", "showAd");
+            if (cc.sys.isNative) {
+               if (cc.sys.os === cc.sys.OS_IOS) {
+                  jsb.reflection.callStaticMethod("AppController", "showAd");
+               }
             }
             GameData.set("adTime", 0);
          }
       }
       else {
-         if (cc.sys.os === cc.sys.OS_IOS) {
-            jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.relaxHigh, true);
-            //插页广告
-            jsb.reflection.callStaticMethod("AppController", "showAd");
+         if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_IOS) {
+               jsb.reflection.callStaticMethod("AppController", "commitScore:withRelax:", GameData.relaxHigh, true);
+               //插页广告
+               jsb.reflection.callStaticMethod("AppController", "showAd");
+            }
          }
       }
       //游戏次数
