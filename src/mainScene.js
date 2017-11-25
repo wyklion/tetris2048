@@ -168,7 +168,7 @@ var MainScene = cc.Scene.extend({
          jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
       }
       else {
-         this.webShow(this);
+         webShow(this);
       }
    },
    /**
@@ -197,7 +197,7 @@ var MainScene = cc.Scene.extend({
          this.showRemoveAds();
       }
       else {
-         this.webShow();
+         webShow(this);
       }
       // if (cc.sys.os === cc.sys.OS_IOS) {
       //    this.setEnable(false);
