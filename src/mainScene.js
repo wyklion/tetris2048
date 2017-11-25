@@ -14,9 +14,11 @@ var MainScene = cc.Scene.extend({
       this.initSystemMenu();
       this.showHighScore();
 
-      if (GameData.playRateTime >= 7) {
-         this.rate();
-         GameData.set("playRateTime", 0);
+      if (cc.sys.isNative) {
+         if (GameData.playRateTime >= 7) {
+            this.rate();
+            GameData.set("playRateTime", 0);
+         }
       }
    },
    initBg: function () {
@@ -68,8 +70,8 @@ var MainScene = cc.Scene.extend({
    showHighScore: function () {
       if (GameData.high != 0) {
          var highScore = this.highScore = new cc.LabelTTF(
-            "HIGH SCORE:" + GameData.high,
-            "Arial-BoldMT",
+            (!isChinese ? "HIGH SCORE:" : "最高分:") + GameData.high,
+            boldFontName,
             30,
             null,
             cc.TEXT_ALIGNMENT_CENTER
@@ -78,21 +80,23 @@ var MainScene = cc.Scene.extend({
             x: cx,
             y: 150
          })
+         highScore.setColor(cc.color(255, 255, 224, 255));
          this.addChild(highScore);
       }
       if (GameData.relaxHigh != 0) {
-         var highScore = this.highScore = new cc.LabelTTF(
-            "RELAX HIGH SCORE:" + GameData.relaxHigh,
+         var relaxHighScore = this.highScore = new cc.LabelTTF(
+            (!isChinese ? "RELAX HIGH SCORE:" : "休闲最高分:") + GameData.relaxHigh,
             "Arial",
             24,
             null,
             cc.TEXT_ALIGNMENT_CENTER
          );
-         highScore.attr({
+         relaxHighScore.attr({
             x: cx,
             y: 120
          })
-         this.addChild(highScore);
+         relaxHighScore.setColor(cc.color(255, 255, 224, 255));
+         this.addChild(relaxHighScore);
       }
    },
    /**
@@ -163,6 +167,9 @@ var MainScene = cc.Scene.extend({
       if (cc.sys.os === cc.sys.OS_IOS) {
          jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
       }
+      else {
+         this.webShow(this);
+      }
    },
    /**
     * 声音开关
@@ -186,7 +193,12 @@ var MainScene = cc.Scene.extend({
     */
    removeAds: function () {
       // 流程改了，直接显示，不从oc回调了。
-      this.showRemoveAds();
+      if (cc.sys.isNative) {
+         this.showRemoveAds();
+      }
+      else {
+         this.webShow();
+      }
       // if (cc.sys.os === cc.sys.OS_IOS) {
       //    this.setEnable(false);
       //    jsb.reflection.callStaticMethod("AppController", "connectStore");
@@ -216,7 +228,7 @@ var MainScene = cc.Scene.extend({
 
       var img;
       // 移除广告
-      img = cc.sys.language == "zh" ? res.p1shopW3 : res.p1shopW3E;
+      img = isChinese ? res.p1shopW3 : res.p1shopW3E;
       var removeButton = new cc.MenuItemImage(
          img,
          img,
@@ -231,7 +243,7 @@ var MainScene = cc.Scene.extend({
       removeButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 恢复购买
-      img = cc.sys.language == "zh" ? res.p1shopW4 : res.p1shopW4E;
+      img = isChinese ? res.p1shopW4 : res.p1shopW4E;
       var restoreButton = new cc.MenuItemImage(
          img,
          img,
@@ -246,7 +258,7 @@ var MainScene = cc.Scene.extend({
       restoreButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 取消
-      img = cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E;
+      img = isChinese ? res.p1shopW5 : res.p1shopW5E;
       var cancelButton = new cc.MenuItemImage(
          img,
          img,
@@ -283,7 +295,7 @@ var MainScene = cc.Scene.extend({
          bg.runAction(cc.sequence(action, func));
          _this.setEnable(true);
       }
-      var image = cc.sys.language == "zh" ? res.p1shopW5 : res.p1shopW5E;
+      var image = isChinese ? res.p1shopW5 : res.p1shopW5E;
       var cancelButton = new cc.MenuItemImage(
          image,
          image,
@@ -308,7 +320,7 @@ var MainScene = cc.Scene.extend({
     */
    cantConnect: function () {
       var _this = this;
-      var bg = new cc.Sprite(cc.sys.language == "zh" ? res.p1shopW6 : res.p1shopW6E);
+      var bg = new cc.Sprite(isChinese ? res.p1shopW6 : res.p1shopW6E);
       bg.attr({ x: cx, y: height });
       this.addChild(bg, 10);
       // 关闭按钮
@@ -335,7 +347,7 @@ var MainScene = cc.Scene.extend({
     */
    showRate: function () {
       this.setEnable(false);
-      var bg = cc.Sprite.create(cc.sys.language == "zh" ? res.p41 : res.p41E);
+      var bg = cc.Sprite.create(isChinese ? res.p41 : res.p41E);
       bg.attr({ x: cx, y: height });
       this.addChild(bg, 10);
       bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
@@ -354,7 +366,7 @@ var MainScene = cc.Scene.extend({
 
       var img;
       // 去评价
-      img = cc.sys.language == "zh" ? res.p43 : res.p43E;
+      img = isChinese ? res.p43 : res.p43E;
       var rateButton = new cc.MenuItemImage(
          img,
          img,
@@ -369,7 +381,7 @@ var MainScene = cc.Scene.extend({
       rateButton.setAnchorPoint(cc.p(0, 0.5));
 
       // 下次吧
-      img = cc.sys.language == "zh" ? res.p44 : res.p44E;
+      img = isChinese ? res.p44 : res.p44E;
       var nextTimeButton = new cc.MenuItemImage(
          img,
          img,
@@ -379,7 +391,7 @@ var MainScene = cc.Scene.extend({
       nextTimeButton.setAnchorPoint(cc.p(0, 0.5));
 
       //不去
-      img = cc.sys.language == "zh" ? res.p45 : res.p45E;
+      img = isChinese ? res.p45 : res.p45E;
       var neverButton = new cc.MenuItemImage(
          img,
          img,
@@ -426,6 +438,60 @@ MainScene.main = function () {
    var transition = new cc.TransitionFade(0.5, new MainScene(), cc.color(0, 0, 0));
    cc.director.runScene(transition);
 }
+
+
+/**
+ * 网页版弹出
+ */
+var webShow = function (scene) {
+   scene.setEnable(false);
+   var bg = cc.Sprite.create(res.p1shopW1);
+   bg.attr({ x: cx, y: height });
+   scene.addChild(bg, 10);
+   bg.runAction(cc.moveTo(1, cc.p(cx, cy + 90)).easing(cc.easeElasticOut()));
+
+   var y = 217;
+   var _this = scene;
+   var dismissFunc = function () {
+      bg.runAction(cc.sequence(
+         cc.moveTo(1, cc.p(cx, height)).easing(cc.easeElasticIn()),
+         cc.callFunc(function () {
+            bg.removeFromParent(true);
+         })
+      ));
+      _this.setEnable(true);
+   }
+   // 内容
+   var note = new cc.LabelTTF(
+      isChinese ? "该功能只有ios版本开放" : "Only open for ios version",
+      boldFontName,
+      30,
+      null,
+      cc.TEXT_ALIGNMENT_CENTER
+   );
+   note.setColor(cc.color(255, 165, 80, 255));
+   note.attr({ x: 200, y: 180 });
+   bg.addChild(note);
+   // 前往
+   var goButton = new cc.MenuItemFont(isChinese ? "前往" : "GO", function () {
+      dismissFunc();
+      window.open("https://itunes.apple.com/" + (isChinese ? "cn" : "us") + "/app/tetris2048/id875196147?ls=1&mt=8");
+   }, scene);
+   goButton.setFontSize(36);
+   goButton.setColor(cc.color(255, 165, 80, 255));
+   goButton.attr({ x: 200, y: 80 });
+   // 关闭
+   var xButton = new cc.MenuItemImage(
+      res.p1shopW2,
+      res.p1shopW2,
+      dismissFunc
+   );
+   xButton.attr({ x: 420, y: 280 });
+
+   var menu = new cc.Menu(goButton, xButton);
+   menu.attr({ x: 0, y: 0 });
+   bg.addChild(menu);
+};
 
 /**
  * ios回调接口，回调不了不用了

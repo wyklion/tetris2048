@@ -75,7 +75,7 @@ var PlayScene = cc.Scene.extend({
       if (!this.autoDown) {
          var relaxLabel = this.relaxLabel = new cc.LabelTTF(
             "RELAX",
-            "Arial-BoldMT",
+            boldFontName,
             22,
             null,
             cc.TEXT_ALIGNMENT_CENTER
@@ -90,7 +90,7 @@ var PlayScene = cc.Scene.extend({
       // 分数
       var scoreLabel = this.scoreLabel = new cc.LabelTTF(
          "0",
-         "Arial-BoldMT",
+         boldFontName,
          46,
          null,
          cc.TEXT_ALIGNMENT_CENTER
@@ -118,7 +118,7 @@ var PlayScene = cc.Scene.extend({
       var _this = this;
       this.unscheduleUpdate();
       this.isSuspend = true;
-      this.menu2.setEnabled(false);
+      this.setEnable(false);
       var suspendLayer = this.suspendLayer = new cc.Node();
       this.addChild(suspendLayer, 3);
       var bg = new cc.Sprite(res.p3);
@@ -139,10 +139,13 @@ var PlayScene = cc.Scene.extend({
       suspendLayer.addChild(this.resumeMenu);
    },
    resumeGame: function () {
-      this.menu2.setEnabled(true);
+      this.setEnable(true);
       this.scheduleUpdate();
       this.isSuspend = false;
       this.suspendLayer.removeFromParent(true);
+   },
+   setEnable: function (b) {
+      this.menu2.setEnabled(b);
    },
    setNext: function (num) {
       if (this.nextPic) {
@@ -266,6 +269,9 @@ var PlayScene = cc.Scene.extend({
       if (cc.sys.os === cc.sys.OS_IOS) {
          jsb.reflection.callStaticMethod("AppController", "share:relax:", this.tetris.score, !this.autoDown);
       }
+      else if (!cc.sys.isNative) {
+         webShow(this);
+      }
    },
    gameOver: function () {
       var tetris = this.tetris;
@@ -274,7 +280,7 @@ var PlayScene = cc.Scene.extend({
       if (GameData.music) audio.playEffect(res.sdead);
       gameState = "GAMEOVER";
       //禁掉按钮
-      this.menu2.setEnabled(false);
+      this.setEnable(false);
 
       var overLayer = new cc.Node();
       this.addChild(overLayer, 3);
@@ -286,7 +292,7 @@ var PlayScene = cc.Scene.extend({
       //score
       var scoreLabel = new cc.LabelTTF(
          "" + this.tetris.score,
-         "Arial-BoldMT",
+         boldFontName,
          72,
          null,
          cc.TEXT_ALIGNMENT_CENTER
@@ -314,7 +320,7 @@ var PlayScene = cc.Scene.extend({
 
       var bestLabel = new cc.LabelTTF(
          highText,
-         "Arial-BoldMT",
+         boldFontName,
          30,
          null,
          cc.TEXT_ALIGNMENT_CENTER
@@ -346,7 +352,7 @@ var PlayScene = cc.Scene.extend({
             }
             overLayer.removeFromParent(true);
             //启用按钮
-            _this.menu2.setEnabled(true);
+            _this.setEnable(true);
             _this.start();
          }
       );

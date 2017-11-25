@@ -59,12 +59,18 @@ var right;
 var height;
 var cx;
 var cy;
+var boldFontName = "Arial-BoldMT";
+var isChinese;
 
 cc.game.onStart = function () {
    audio = cc.audioEngine;
-
+   //字体
+   if (!cc.sys.isNative)
+      boldFontName = "Arial";
    //测试语言
    // cc.sys.language = "abc";
+   //语言
+   isChinese = cc.sys.language == "zh";
 
    var sys = cc.sys;
    if (!sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
