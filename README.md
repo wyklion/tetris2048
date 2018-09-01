@@ -5,7 +5,9 @@
 用cocos-js重写一下。
 
 AppStore地址：https://itunes.apple.com/cn/app/tetris2048/id875196147
+
 U77的链接：http://www.u77.com/game/14294
+
 微信小游戏：搜 俄罗斯方块2048
 
 微信说明：
