@@ -69,6 +69,9 @@ var PlayScene = cc.Scene.extend({
       var menu2 = this.menu2 = new cc.Menu(suspendButton);
       menu2.attr({ x: 0, y: 0 });
       this.addChild(menu2);
+      if (isWeixinGame) {
+         suspendButton.setVisible(false);
+      }
 
 
       //RELAX标记
@@ -81,7 +84,7 @@ var PlayScene = cc.Scene.extend({
             cc.TEXT_ALIGNMENT_CENTER
          );
          relaxLabel.attr({
-            x: Math.max(cx - 180, left + 120),
+            x: isWeixinGame ? Math.min(cx + 180, right - 120) : Math.max(cx - 180, left + 120),
             y: height - 50,
             color: cc.color(255, 254, 194),
          })
@@ -111,7 +114,7 @@ var PlayScene = cc.Scene.extend({
       // --]]
       // 下一块
       var nextSprite = new cc.Sprite(res.next);
-      nextSprite.attr({ x: cx + (right - cx) * 0.5, y: height - 50 });
+      nextSprite.attr({ x: isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, y: height - 50 });
       this.addChild(nextSprite, 1);
    },
    suspend: function () {
@@ -152,7 +155,7 @@ var PlayScene = cc.Scene.extend({
          this.nextPic.removeFromParent(true);
       }
       this.nextPic = this.tetris.getNumerSprite(num);
-      this.nextPic.setPosition(cx + (right - cx) * 0.5, height - 50);
+      this.nextPic.setPosition(isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, height - 50);
       this.nextPic.setScale(0.63);
       this.addChild(this.nextPic);
    },

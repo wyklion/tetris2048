@@ -105,30 +105,33 @@ var MainScene = cc.Scene.extend({
    initSystemMenu: function () {
       var systemY = 235;
       var _this = this;
-      // 排行榜
-      var topButton = this.topButton = new cc.MenuItemImage(
-         res.p1list1,
-         res.p1list2,
-         function () {
-            if (GameData.music) {
-               audio.playEffect(res.sbutton);
+      var topButton, storeButton
+      if (!isWeixinGame) {
+         // 排行榜
+         topButton = this.topButton = new cc.MenuItemImage(
+            res.p1list1,
+            res.p1list2,
+            function () {
+               if (GameData.music) {
+                  audio.playEffect(res.sbutton);
+               }
+               _this.showLeaderboard();
             }
-            _this.showLeaderboard();
-         }
-      );
-      topButton.attr({ x: cx - 130, y: systemY });
-      // 去广告
-      var storeButton = this.storeButton = new cc.MenuItemImage(
-         res.p1shop1,
-         res.p1shop2,
-         function () {
-            if (GameData.music) {
-               audio.playEffect(res.sbutton);
+         );
+         topButton.attr({ x: cx - 130, y: systemY });
+         // 去广告
+         this.storeButton = new cc.MenuItemImage(
+            res.p1shop1,
+            res.p1shop2,
+            function () {
+               if (GameData.music) {
+                  audio.playEffect(res.sbutton);
+               }
+               _this.removeAds();
             }
-            _this.removeAds();
-         }
-      );
-      storeButton.attr({ x: cx, y: systemY });
+         );
+         storeButton.attr({ x: cx, y: systemY });
+      }
       // 声音
       var musicButton1 = this.musicButton1 = new cc.MenuItemImage(
          res.p1sound1,
@@ -137,7 +140,7 @@ var MainScene = cc.Scene.extend({
             _this.toggleSound();
          }
       );
-      musicButton1.attr({ x: cx + 120, y: systemY });
+      musicButton1.attr({ x: isWeixinGame ? cx : cx + 120, y: systemY });
       musicButton1.setVisible(GameData.music ? true : false);
       var musicButton2 = this.musicButton2 = new cc.MenuItemImage(
          res.p1sound2,
@@ -146,10 +149,14 @@ var MainScene = cc.Scene.extend({
             _this.toggleSound();
          }
       );
-      musicButton2.attr({ x: cx + 120, y: systemY });
+      musicButton2.attr({ x: isWeixinGame ? cx : cx + 120, y: systemY });
       musicButton2.setVisible(GameData.music ? false : true);
 
-      var menu = this.systemMenu = new cc.Menu(topButton, storeButton, musicButton1, musicButton2);
+      var menu;
+      if (isWeixinGame)
+         menu = this.systemMenu = new cc.Menu(musicButton1, musicButton2);
+      else
+         menu = this.systemMenu = new cc.Menu(topButton, storeButton, musicButton1, musicButton2);
       menu.attr({ x: 0, y: 0 });
       this.addChild(menu);
    },

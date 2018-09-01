@@ -82,6 +82,13 @@ var gameMinJsName = "game.min." + CurentTime() + ".js";
 if (USE_LOADER)
    gameMinJsName += "zip";
 
+// 打包微信小游戏
+if (argv.w) {
+   frame_dir = path.join(project_dir, "frameworks/cocos2d-html5-weixin");
+   module_config = require(path.join(frame_dir, "moduleConfig.json"));
+   gameMinJsName = "game.min.js";
+}
+
 // console.log("project_dir:", project_dir);
 // console.log("frame_dir:", frame_dir);
 // console.log("publish_dir:", publish_dir);
@@ -180,6 +187,11 @@ gulp.task("project_html", ["project_clean"], function () {
          .pipe(uglify())
          .pipe(optimisejs())
          .pipe(gulp.dest(path.join(publish_res)));
+   // 微信小游戏框架复制
+   if (argv.w) {
+      gulp.src(path.join(project_dir, "frameworks/WeChatGame/**"))
+         .pipe(gulp.dest(publish_dir));
+   }
 });
 gulp.task("project_res", ["project_clean"], function () {
    gulp.src(path.join(project_dir, "res/**"))

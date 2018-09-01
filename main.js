@@ -61,6 +61,7 @@ var cx;
 var cy;
 var boldFontName = "Arial-BoldMT";
 var isChinese;
+var isWeixinGame = false;
 
 cc.game.onStart = function () {
    audio = cc.audioEngine;
@@ -71,6 +72,8 @@ cc.game.onStart = function () {
    // cc.sys.language = "abc";
    //语言
    isChinese = cc.sys.language == "zh";
+   //是否微信小游戏
+   isWeixinGame = cc.game.config.platform === "weixin";
 
    var sys = cc.sys;
    if (!sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
