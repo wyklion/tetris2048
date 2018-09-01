@@ -2,12 +2,15 @@
 
 旧版用quick-cocos-x做的。现在ios11不支持了。
 
-用cocos-js重写一下。到时给U77一个链接。
+用cocos-js重写一下。
 
-刚把代码翻完。先提交一下。
+AppStore地址：https://itunes.apple.com/cn/app/tetris2048/id875196147
+U77的链接：http://www.u77.com/game/14294
+微信小游戏：搜 俄罗斯方块2048
 
-之后继续。
 
 # 项目说明
-没加frameworks，太大了。
-之后会提交修改的部分。
+h5版本使用gulp打包。
+gulp 正常打包。
+gulp -p 打包压缩版。
+gulp -wx 打包微信小游戏版本。
