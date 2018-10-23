@@ -7,3 +7,5 @@ var Parser = require('libs/xmldom/dom-parser');
 window.DOMParser = Parser.DOMParser;
 require('weapp-adapter');
 require('game.min');
+
+wx.showShareMenu();
