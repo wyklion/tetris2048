@@ -21,7 +21,7 @@ let bannerAd = wx.createBannerAd({
 })
 bannerAd.show()
 
-var height2 = height * 1.5;
+var height2 = windowHeight * 0.153;
 wx.showShareMenu();
 wx.onShareAppMessage(function () {
    return {
