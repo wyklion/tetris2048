@@ -274,6 +274,27 @@ var PlayScene = cc.Scene.extend({
             jsb.reflection.callStaticMethod("AppController", "share:relax:", this.tetris.score, !this.autoDown);
          }
       }
+      else if (isWeixinGame) {
+         // 微信小程序分享
+         var info = wx.getSystemInfoSync();
+         var windowWidth = info.windowWidth;
+         var windowHeight = info.windowHeight;
+         var pixelRatio = info.pixelRatio;
+         var height2 = windowHeight * 0.153;
+         var tempFilePath = canvas.toTempFilePathSync({
+            x: 0, y: height2 * pixelRatio,
+            width: windowWidth * pixelRatio,
+            height: (windowHeight - height2 * 2) * pixelRatio,
+            destWidth: 500,
+            destHeight: 400
+         })
+         var title = '我得了' + this.tetris.score + '分！';
+         if (!this.autoDown) title = '休闲模式' + title;
+         wx.shareAppMessage({
+            title: title,
+            imageUrl: tempFilePath
+         })
+      }
       else {
          webShow(this);
       }
@@ -470,5 +491,3 @@ var PlayScene = cc.Scene.extend({
       GameData.set("playRateTime", GameData.playRateTime + 1);
    },
 });
-
-
