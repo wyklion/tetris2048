@@ -8,4 +8,30 @@ window.DOMParser = Parser.DOMParser;
 require('weapp-adapter');
 require('game.min');
 
+var { windowWidth, windowHeight, pixelRatio } = wx.getSystemInfoSync();
+var height = windowHeight * 0.102;
+let bannerAd = wx.createBannerAd({
+   adUnitId: 'adunit-c0ee23e59d3ce0ae',
+   style: {
+      left: 0,
+      top: windowHeight - height,
+      width: windowWidth,
+      height: height,
+   }
+})
+bannerAd.show()
+
+var height2 = height * 1.5;
 wx.showShareMenu();
+wx.onShareAppMessage(function () {
+   return {
+      title: '俄罗斯方块2048',
+      imageUrl: canvas.toTempFilePathSync({
+         x: 0, y: height2 * pixelRatio,
+         width: windowWidth * pixelRatio,
+         height: (windowHeight - height2 * 2) * pixelRatio,
+         destWidth: 500,
+         destHeight: 400
+      })
+   }
+})
