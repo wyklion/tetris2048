@@ -472,7 +472,7 @@ var webShow = function (scene) {
    }
    // 内容
    var note = new cc.LabelTTF(
-      isChinese ? "该功能只有ios版本开放" : "Only open for ios version",
+      isChinese ? "网页不支持分享功能\n请在ios平台或微信小程序\n搜索\"俄罗斯方块2048\"" : "Only open for ios and WeiChat version",
       boldFontName,
       30,
       null,
@@ -482,12 +482,12 @@ var webShow = function (scene) {
    note.attr({ x: 200, y: 180 });
    bg.addChild(note);
    // 前往
-   var goButton = new cc.MenuItemFont(isChinese ? "前往" : "GO", function () {
+   var goButton = new cc.MenuItemFont(isChinese ? "前往苹果商店" : "Go to App store", function () {
       dismissFunc();
       window.open("https://itunes.apple.com/" + (isChinese ? "cn" : "us") + "/app/tetris2048/id875196147?ls=1&mt=8");
    }, scene);
-   goButton.setFontSize(36);
-   goButton.setColor(cc.color(255, 165, 80, 255));
+   goButton.setFontSize(25);
+   goButton.setColor(cc.color(166, 80, 255, 255));
    goButton.attr({ x: 200, y: 80 });
    // 关闭
    var xButton = new cc.MenuItemImage(
