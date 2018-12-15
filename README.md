@@ -2,7 +2,7 @@
 
 旧版用quick-cocos-x做的。现在ios11不支持了。用cocos-js重写一下。
 
-github page: https://wyklion.github.io/tetris2048/ (非打包版本)
+github page: https://wyklion.github.io/tetris2048/ 
 
 ios版: AppStore地址：https://itunes.apple.com/cn/app/tetris2048/id875196147
 
