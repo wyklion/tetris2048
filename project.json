@@ -10,7 +10,6 @@
    "modules": [
       "cocos2d"
    ],
-   "platform": "weixin",
    "jsList": [
       "src/gameData.js",
       "src/resource.js",
