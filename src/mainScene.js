@@ -105,7 +105,7 @@ var MainScene = cc.Scene.extend({
    initSystemMenu: function () {
       var systemY = 235;
       var _this = this;
-      var topButton, storeButton
+      var topButton, storeButton;
       if (!isWeixinGame) {
          // 排行榜
          topButton = this.topButton = new cc.MenuItemImage(
@@ -120,7 +120,7 @@ var MainScene = cc.Scene.extend({
          );
          topButton.attr({ x: cx - 130, y: systemY });
          // 去广告
-         this.storeButton = new cc.MenuItemImage(
+         storeButton = this.storeButton = new cc.MenuItemImage(
             res.p1shop1,
             res.p1shop2,
             function () {
