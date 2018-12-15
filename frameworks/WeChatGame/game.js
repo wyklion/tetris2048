@@ -8,6 +8,7 @@ window.DOMParser = Parser.DOMParser;
 require('weapp-adapter');
 require('game.min');
 
+// 广告条
 var { windowWidth, windowHeight, pixelRatio } = wx.getSystemInfoSync();
 var height = windowHeight * 0.102;
 let bannerAd = wx.createBannerAd({
@@ -15,12 +16,16 @@ let bannerAd = wx.createBannerAd({
    style: {
       left: 0,
       top: windowHeight - height,
-      width: windowWidth,
+      // width: windowWidth,
       height: height,
    }
 })
-bannerAd.show()
+bannerAd.show();
+bannerAd.onResize(res => {
+   bannerAd.style.left = (windowWidth - bannerAd.style.realWidth) * 0.5;
+})
 
+// 分享
 var height2 = windowHeight * 0.153;
 wx.showShareMenu();
 wx.onShareAppMessage(function () {
