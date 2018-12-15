@@ -116,6 +116,10 @@ var projectModify = function () {
       delete project_json["engineDir"];
       delete project_json["modules"];
       delete project_json["jsList"];
+      // 不是微信要删平台类型
+      if (!argv.w) {
+         delete project_json["platform"];
+      }
       var content = JSON.stringify(project_json);
       file.contents = new Buffer(content);
       this.push(file);
