@@ -436,6 +436,10 @@ var MainScene = cc.Scene.extend({
  * @param autoDown 自动下落
  */
 MainScene.play = function (autoDown) {
+   // 隐藏游戏圈按钮
+   if (isWeixinGame) {
+      GameClubButton.hide();
+   }
    var transition = new cc.TransitionFade(0.5, new PlayScene(autoDown), cc.color(0, 0, 0));
    cc.director.runScene(transition);
 }
@@ -446,6 +450,10 @@ MainScene.play = function (autoDown) {
 MainScene.main = function () {
    var transition = new cc.TransitionFade(0.5, new MainScene(), cc.color(0, 0, 0));
    cc.director.runScene(transition);
+   // 显示游戏圈按钮
+   if (isWeixinGame) {
+      GameClubButton.show();
+   }
 }
 
 

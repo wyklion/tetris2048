@@ -40,7 +40,6 @@ var PlayScene = cc.Scene.extend({
       var bg = this.bg = cc.Sprite.create(res.p2);
       bg.attr({ x: cx, y: cy });
       this.addChild(bg, 0);
-
       // 返回按钮
       var returnButton = this.returnButton = new cc.MenuItemImage(
          res.back1,
@@ -72,8 +71,6 @@ var PlayScene = cc.Scene.extend({
       if (isWeixinGame) {
          suspendButton.setVisible(false);
       }
-
-
       //RELAX标记
       if (!this.autoDown) {
          var relaxLabel = this.relaxLabel = new cc.LabelTTF(

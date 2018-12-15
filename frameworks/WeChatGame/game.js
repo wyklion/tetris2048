@@ -40,3 +40,14 @@ wx.onShareAppMessage(function () {
       })
    }
 })
+
+// 游戏圈
+var GameClubButton = wx.createGameClubButton({
+   icon: 'light',
+   style: {
+      top: 10,
+      left: 10,
+      width: 40,
+      height: 40
+   },
+});
