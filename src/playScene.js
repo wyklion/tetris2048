@@ -299,6 +299,17 @@ var PlayScene = cc.Scene.extend({
          webShow(this);
       }
    },
+   setWeixinScore: function (key, score) {
+      if (isWeixinGame) {
+         var value = {
+            wxgame: {
+               "score": score,
+               "update_time": Math.floor(Date.now() / 1000)
+            }
+         }
+         wx.setUserCloudStorage({ KVDataList: [{ key: key, value: JSON.stringify(value) }] });
+      }
+   },
    gameOver: function () {
       var tetris = this.tetris;
       this.tetris.clearRecord();
@@ -330,12 +341,16 @@ var PlayScene = cc.Scene.extend({
          if (tetris.score > GameData.high) {
             GameData.set("high", tetris.score);
          }
+         // 微信排行最高分
+         this.setWeixinScore('top', tetris.score);
       }
       else {
          //休闲最高分
          if (tetris.score > GameData.relaxHigh) {
             GameData.set("relaxHigh", tetris.score);
          }
+         // 微信排行休闲最高分
+         this.setWeixinScore('relextop', tetris.score);
       }
       //best
       var highText;
