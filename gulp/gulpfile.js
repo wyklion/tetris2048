@@ -116,9 +116,9 @@ var projectModify = function () {
       delete project_json["engineDir"];
       delete project_json["modules"];
       delete project_json["jsList"];
-      // 不是微信要删平台类型
-      if (!argv.w) {
-         delete project_json["platform"];
+      // 微信平台
+      if (argv.w) {
+         project_json["platform"] = 'weixin';
       }
       var content = JSON.stringify(project_json);
       file.contents = new Buffer(content);
