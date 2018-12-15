@@ -68,6 +68,7 @@ var TetrisLayer = cc.Layer.extend({
          cc.TEXT_ALIGNMENT_CENTER
       );
       label.attr({ x: BASESIZE * 0.5, y: BASESIZE * 0.5 });
+      label.setFontFillColor(color);
       pic.addChild(label);
       if (idx != null) {
          pic.setPosition(this.getBlockPosition(idx));
