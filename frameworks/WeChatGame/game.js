@@ -42,7 +42,7 @@ wx.onShareAppMessage(function () {
 })
 
 // 游戏圈
-var GameClubButton = wx.createGameClubButton({
+window.GameClubButton = wx.createGameClubButton({
    icon: 'light',
    style: {
       top: 10,
