@@ -82,6 +82,9 @@ var MainScene = cc.Scene.extend({
          })
          highScore.setColor(cc.color(255, 255, 224, 255));
          this.addChild(highScore);
+         if (isWeixinGame) {
+            highScore.attr({ y: height - 80 });
+         }
       }
       if (GameData.relaxHigh != 0) {
          var relaxHighScore = this.highScore = new cc.LabelTTF(
@@ -97,6 +100,9 @@ var MainScene = cc.Scene.extend({
          })
          relaxHighScore.setColor(cc.color(255, 255, 224, 255));
          this.addChild(relaxHighScore);
+         if (isWeixinGame) {
+            relaxHighScore.attr({ y: height - 110 });
+         }
       }
    },
    /**

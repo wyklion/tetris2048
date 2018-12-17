@@ -14,15 +14,14 @@ var height = windowHeight * 0.102;
 let bannerAd = wx.createBannerAd({
    adUnitId: 'adunit-c0ee23e59d3ce0ae',
    style: {
-      left: 0,
-      top: windowHeight - height,
-      // width: windowWidth,
-      height: height,
+      left: 0, top: 0,
+      width: 300,
    }
 })
 bannerAd.show();
 bannerAd.onResize(res => {
    bannerAd.style.left = (windowWidth - bannerAd.style.realWidth) * 0.5;
+   bannerAd.style.top = windowHeight - bannerAd.style.realHeight;
 })
 
 // 分享

@@ -18,6 +18,12 @@ var PlayScene = cc.Scene.extend({
       this.addChild(tetris);
       tetris.scene = this;
 
+      // 微信要给广告条留位置
+      if (isWeixinGame) {
+         tetris.setScale(0.95);
+         tetris.setPosition(cx, cy + 35);
+      }
+
       //开始
       tetris.getNextNumer();
       this.start();
