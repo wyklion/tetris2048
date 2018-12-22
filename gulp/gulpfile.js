@@ -182,10 +182,13 @@ gulp.task("project_html", ["project_clean"], function () {
    gulp.src(path.join(project_dir, "project.json"), { read: false })
       .pipe(projectModify())
       .pipe(gulp.dest(path.join(publish_dir)));
-   gulp.src(path.join(project_dir, "index.html"))
-      .pipe(htmlModify())
-      .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
-      .pipe(gulp.dest(path.join(publish_dir)));
+   // 微信小游戏不用index.html
+   if (!argv.w) {
+      gulp.src(path.join(project_dir, "index.html"))
+         .pipe(htmlModify())
+         .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
+         .pipe(gulp.dest(path.join(publish_dir)));
+   }
    if (USE_LOADER)
       gulp.src(path.join("./", "JsLoader.js"))
          .pipe(uglify())

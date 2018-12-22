@@ -10,20 +10,23 @@ require('game.min');
 
 // 广告条
 var { windowWidth, windowHeight, pixelRatio } = wx.getSystemInfoSync();
-var height = windowHeight * 0.102;
+var height = windowHeight * 0.15;
 var lastBanner;
 var createBanner = function () {
    var bannerAd = wx.createBannerAd({
       adUnitId: 'adunit-c0ee23e59d3ce0ae',
       style: {
          left: 0, top: 0,
-         width: 300,
+         width: windowWidth,
       }
    })
    bannerAd.show();
    bannerAd.onResize(res => {
       bannerAd.style.left = (windowWidth - bannerAd.style.realWidth) * 0.5;
       bannerAd.style.top = windowHeight - bannerAd.style.realHeight;
+      if (bannerAd.style.realHeight > height) {
+         bannerAd.style.width = windowWidth * height / bannerAd.style.realHeight;
+      }
    })
    bannerAd.onLoad(() => {
       if (lastBanner) {
