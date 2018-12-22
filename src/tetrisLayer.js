@@ -376,9 +376,9 @@ var TetrisLayer = cc.Layer.extend({
       var pos = this.getBlockPosition(idx);
       var light = new cc.LayerColor(cc.color(255, 255, 255, 0));
       this.addChild(light);
-      light.setContentSize(CCSize(BASESIZE, BASESIZE))
+      light.setContentSize(cc.size(BASESIZE, BASESIZE))
       light.setPosition(pos)
-      light.setAnchorPoint(ccp(0.5, 0.5))
+      light.setAnchorPoint(cc.p(0.5, 0.5))
       light.ignoreAnchorPointForPosition(false)
       light.runAction(cc.sequence(
          cc.adeTo(0.1, 128),

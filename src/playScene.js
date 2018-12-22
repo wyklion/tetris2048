@@ -304,6 +304,7 @@ var PlayScene = cc.Scene.extend({
    },
    setWeixinScore: function (key, score) {
       if (isWeixinGame) {
+         // 游戏中心排行榜
          var value = {
             wxgame: {
                "score": score,

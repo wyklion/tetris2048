@@ -8,8 +8,10 @@ window.DOMParser = Parser.DOMParser;
 require('weapp-adapter');
 require('game.min');
 
+// 系统信息
+var systemInfo = wx.getSystemInfoSync();
 // 广告条
-var { windowWidth, windowHeight, pixelRatio } = wx.getSystemInfoSync();
+var { screenWidth, screenHeight, windowWidth, windowHeight, pixelRatio } = systemInfo;
 var height = windowHeight * 0.15;
 var lastBanner;
 var createBanner = function () {
@@ -67,3 +69,54 @@ window.GameClubButton = wx.createGameClubButton({
       height: 40
    },
 });
+
+// 主域绘制
+var loopDrawShareCanvas = () => {
+   let openDataContext = wx.getOpenDataContext();
+   let sharedCanvas = openDataContext.canvas;
+
+   //  rankTexture.initWithElement(sharedCanvas);
+   rankTexture.handleLoadedTexture();
+   rankSpriteFrame.setTexture(rankTexture);
+   // wxRankBg.spriteFrame = rankSpriteFrame;
+   if (first) {
+
+      wxRankBg.setSpriteFrame(rankSpriteFrame);
+      first = false;
+   } else {
+      wxRankBg.spriteFrame = rankSpriteFrame;
+   }
+
+   //  const screenWidth = window.innerWidth;
+   //  const screenHeight = window.innerHeight;
+   //  canvas.getContext('2d').drawImage(sharedCanvas, 0, 0, screenWidth, screenHeight);
+}
+
+var rankTexture;
+var rankSpriteFrame;
+var rankHandle;
+var first;
+// 开放域，排行榜
+window.openRankList = () => {
+   let openDataContext = wx.getOpenDataContext();
+   let sharedCanvas = openDataContext.canvas;
+   // 在主域将sharedCanvas宽高都按像素比放大
+   sharedCanvas.width = 440;
+   sharedCanvas.height = 800;
+   // wxRankBg.setScaleY();
+   rankTexture = new cc.Texture2D();
+   rankTexture.initWithElement(sharedCanvas);
+   rankSpriteFrame = new cc.SpriteFrame();
+   rankSpriteFrame.setRect(cc.rect(0, 0, 440, 800));
+   first = true;
+   openDataContext.postMessage({ action: 'friendRank', key: 'top' });
+   loopDrawShareCanvas();
+   rankHandle = setInterval(loopDrawShareCanvas, 1000);
+}
+// 关闭排行榜
+window.closeRankList = () => {
+   rankTexture = null;
+   rankSpriteFrame = null;
+   if (rankHandle)
+      clearInterval(rankHandle);
+}

@@ -112,19 +112,19 @@ var MainScene = cc.Scene.extend({
       var systemY = 235;
       var _this = this;
       var topButton, storeButton;
-      if (!isWeixinGame) {
-         // 排行榜
-         topButton = this.topButton = new cc.MenuItemImage(
-            res.p1list1,
-            res.p1list2,
-            function () {
-               if (GameData.music) {
-                  audio.playEffect(res.sbutton);
-               }
-               _this.showLeaderboard();
+      // 排行榜
+      topButton = this.topButton = new cc.MenuItemImage(
+         res.p1list1,
+         res.p1list2,
+         function () {
+            if (GameData.music) {
+               audio.playEffect(res.sbutton);
             }
-         );
-         topButton.attr({ x: cx - 130, y: systemY });
+            _this.showLeaderboard();
+         }
+      );
+      topButton.attr({ x: cx - 130, y: systemY });
+      if (!isWeixinGame) {
          // 去广告
          storeButton = this.storeButton = new cc.MenuItemImage(
             res.p1shop1,
@@ -146,7 +146,7 @@ var MainScene = cc.Scene.extend({
             _this.toggleSound();
          }
       );
-      musicButton1.attr({ x: isWeixinGame ? cx : cx + 120, y: systemY });
+      musicButton1.attr({ x: cx + 120, y: systemY });
       musicButton1.setVisible(GameData.music ? true : false);
       var musicButton2 = this.musicButton2 = new cc.MenuItemImage(
          res.p1sound2,
@@ -155,12 +155,16 @@ var MainScene = cc.Scene.extend({
             _this.toggleSound();
          }
       );
-      musicButton2.attr({ x: isWeixinGame ? cx : cx + 120, y: systemY });
+      musicButton2.attr({ x: cx + 120, y: systemY });
       musicButton2.setVisible(GameData.music ? false : true);
 
       var menu;
-      if (isWeixinGame)
-         menu = this.systemMenu = new cc.Menu(musicButton1, musicButton2);
+      if (isWeixinGame) {
+         topButton.attr({ x: cx - 80, y: systemY });
+         musicButton1.attr({ x: cx + 80, y: systemY });
+         musicButton2.attr({ x: cx + 80, y: systemY });
+         menu = this.systemMenu = new cc.Menu(topButton, musicButton1, musicButton2);
+      }
       else
          menu = this.systemMenu = new cc.Menu(topButton, storeButton, musicButton1, musicButton2);
       menu.attr({ x: 0, y: 0 });
@@ -181,6 +185,27 @@ var MainScene = cc.Scene.extend({
          if (cc.sys.os === cc.sys.OS_IOS) {
             jsb.reflection.callStaticMethod("AppController", "showLeaderboard");
          }
+      }
+      else if (isWeixinGame) {
+         // 微信排行榜
+         var bg = new cc.LayerColor(cc.color(0, 0, 0, 200));
+         bg.setContentSize(size);
+         bg.setAnchorPoint(cc.p(0.5, 0.5));
+         bg.ignoreAnchorPointForPosition(false);
+         bg.attr({ x: cx, y: cy });
+         this.addChild(bg, 100);
+         var wxRankBg = window.wxRankBg = cc.Sprite.create();
+         wxRankBg.attr({ x: cx, y: cy });
+         bg.addChild(wxRankBg);
+         // 关闭
+         var closeButton = new cc.MenuItemFont("关闭", function () {
+            window.closeRankList;
+         }, window);
+         closeButton.setFontSize(25);
+         closeButton.setColor(cc.color(224, 224, 224, 255));
+         closeButton.attr({ x: cx, y: 80 });
+         bg.addChild(closeButton);
+         window.openRankList();
       }
       else {
          webShow(this);
