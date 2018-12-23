@@ -338,10 +338,17 @@ var PlayScene = cc.Scene.extend({
       }
       //best
       var highText;
-      if (this.autoDown)
-         highText = "HIGH SCORE:" + GameData.high;
-      else
-         highText = "HIGH SCORE:" + GameData.relaxHigh;
+      if (isChinese) {
+         if (this.autoDown)
+            highText = "最高分：" + GameData.high;
+         else
+            highText = "休闲最高分：" + GameData.relaxHigh;
+      } else {
+         if (this.autoDown)
+            highText = "HIGH SCORE:" + GameData.high;
+         else
+            highText = "HIGH SCORE:" + GameData.relaxHigh;
+      }
 
       var bestLabel = new cc.LabelTTF(
          highText,
