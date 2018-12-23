@@ -1,5 +1,5 @@
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 7;
 const ITEM_HEIGHT = 60;
 
 class RankListRenderer {
@@ -7,6 +7,8 @@ class RankListRenderer {
       this.totalPage = 0;
       this.currPage = 0;
       this.gameDatas = [];
+      this.currentData = null;
+      this.currentUser = null;
       this.init();
    }
 
@@ -18,7 +20,15 @@ class RankListRenderer {
    }
 
    listen() {
-      //msg -> {action, data}
+      var _this = this;
+      wx.getUserInfo({
+         openIdList: ['selfOpenId'],
+         success: function (res) {
+            if (res.data && res.data.length) {
+               _this.currentUser = res.data[0];
+            }
+         }
+      })
       wx.onMessage(msg => {
          if (msg.action === 'friendRank') {
             if (!msg.key)
@@ -53,14 +63,19 @@ class RankListRenderer {
             }
          })
          if (score > 0) {
-            rankList.push({
+            var record = {
                name: item.nickname,
                icon: item.avatarUrl,
                score: score
-            })
+            }
+            rankList.push(record);
+            if (this.currentUser && this.currentUser.nickName === record.name) {
+               this.currentData = record;
+            }
          }
       })
       rankList.sort((a, b) => b.score - a.score);
+      rankList.forEach((a, b) => a.rank = b + 1);
       console.log(rankList);
       return rankList;
    }
@@ -93,7 +108,8 @@ class RankListRenderer {
       wx.getFriendCloudStorage({
          keyList: [key],
          success: res => {
-            console.log("wx.getFriendCloudStorage success", res);
+            // console.log("wx.getFriendCloudStorage success", res);
+            this.currentData = null;
             var rankList = this.gameDatas = this.getRankValues(res.data, key);
             const dataLen = rankList.length;
             this.currPage = 0;
@@ -103,7 +119,7 @@ class RankListRenderer {
             }
          },
          fail: res => {
-            console.log("wx.getFriendCloudStorage fail", res);
+            // console.log("wx.getFriendCloudStorage fail", res);
          },
       });
    }
@@ -111,59 +127,56 @@ class RankListRenderer {
    showPagedRanks(page) {
       const pageStart = page * PAGE_SIZE;
       const pagedData = this.gameDatas.slice(pageStart, pageStart + PAGE_SIZE);
-      const pageLen = pagedData.length;
       this.ctx.clearRect(0, 0, 440, 800);
       for (let i = 0, len = pagedData.length; i < len; i++) {
-         this.drawRankItem(this.ctx, i, pageStart + i + 1, pagedData[i], pageLen);
+         this.drawRankItem(this.ctx, i, pagedData[i]);
+      }
+      if (this.currentData) {
+         this.drawRankItem(this.ctx, 8.45, this.currentData);
       }
    }
 
    //canvas原点在左上角
-   drawRankItem(ctx, index, rank, data, pageLen) {
-      const avatarUrl = data.icon.substr(0, data.icon.length - 1) + "132";
+   drawRankItem(ctx, index, data) {
+      const rank = data.rank;
+      const avatarUrl = data.icon.substr(0, data.icon.length - 3) + "46";
       const nick = data.name.length <= 10 ? data.name : data.name.substr(0, 10) + "...";
       const grade = data.score;
       const itemGapY = ITEM_HEIGHT * index;
       //名次
-      ctx.fillStyle = "#D8AD51";
+      var color = 'white';
+      if (index === 0)
+         color = '#F88D61';
+      else if (index === 1)
+         color = '#E8AD41';
+      else if (index === 2)
+         color = '#E8ED81';
+      ctx.fillStyle = color;
       ctx.textAlign = "right";
       ctx.baseLine = "middle";
-      ctx.font = "40px Helvetica";
-      ctx.fillText(`${rank}`, 50, 80 + itemGapY);
+      ctx.font = "34px Helvetica";
+      ctx.fillText(`${rank}`, 45, 85 + itemGapY);
 
       //头像
       const avatarImg = wx.createImage();
       avatarImg.src = avatarUrl;
       avatarImg.onload = () => {
-         if (index + 1 > pageLen) {
-            return;
-         }
-         ctx.drawImage(avatarImg, 120, 10 + itemGapY, 100, 100);
+         ctx.drawImage(avatarImg, 70, 50 + itemGapY, 46, 46);
       };
 
       //名字
-      ctx.fillStyle = "#EEEEEE";
+      ctx.fillStyle = "#FFFFFF";
       ctx.textAlign = "left";
       ctx.baseLine = "middle";
       ctx.font = "24px Helvetica";
       ctx.fillText(nick, 130, 80 + itemGapY);
 
       //分数
-      ctx.fillStyle = "#EEEEEE";
-      ctx.textAlign = "left";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.textAlign = "right";
       ctx.baseLine = "middle";
       ctx.font = "24px Helvetica";
-      ctx.fillText(`${grade}分`, 310, 80 + itemGapY);
-
-      // //分隔线
-      // const lineImg = wx.createImage();
-      // lineImg.src = 'subdomain/images/llk_x.png';
-      // lineImg.onload = () => {
-      //    if (index + 1 > pageLen) {
-      //       return;
-      //    }
-      //    ctx.drawImage(lineImg, 14, 120 + itemGapY, 720, 1);
-      // };
+      ctx.fillText(`${grade}`, 415, 80 + itemGapY);
    }
 }
 

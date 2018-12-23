@@ -72,51 +72,105 @@ window.GameClubButton = wx.createGameClubButton({
 
 // 主域绘制
 var loopDrawShareCanvas = () => {
+   drawTimes++;
+   if (drawTimes > 50) {
+      return;
+   }
    let openDataContext = wx.getOpenDataContext();
    let sharedCanvas = openDataContext.canvas;
 
-   //  rankTexture.initWithElement(sharedCanvas);
+   var rankTexture = new cc.Texture2D();
+   rankTexture.initWithElement(sharedCanvas);
    rankTexture.handleLoadedTexture();
    rankSpriteFrame.setTexture(rankTexture);
-   // wxRankBg.spriteFrame = rankSpriteFrame;
-   if (first) {
-
-      wxRankBg.setSpriteFrame(rankSpriteFrame);
-      first = false;
-   } else {
-      wxRankBg.spriteFrame = rankSpriteFrame;
-   }
-
-   //  const screenWidth = window.innerWidth;
-   //  const screenHeight = window.innerHeight;
-   //  canvas.getContext('2d').drawImage(sharedCanvas, 0, 0, screenWidth, screenHeight);
+   wxRankBg.setSpriteFrame(rankSpriteFrame);
+   //  console.log('draw:', drawTimes);
 }
-
-var rankTexture;
+// 画方块
+var createColorBg = (size, x, y, color) => {
+   var bg = new cc.LayerColor(color);
+   bg.setContentSize(size);
+   bg.setAnchorPoint(cc.p(0.5, 0.5));
+   bg.ignoreAnchorPointForPosition(false);
+   bg.attr({ x: x, y: y });
+   return bg;
+}
 var rankSpriteFrame;
+var wxRankBg;
 var rankHandle;
-var first;
+var drawTimes = 0;
 // 开放域，排行榜
-window.openRankList = () => {
+window.openRankList = (scene, size) => {
+   var cx = size.width / 2;
+   var cy = size.height / 2;
+   // 背景
+   scene.setEnable(false);
+   var bg = createColorBg(size, cx, cy, cc.color(0, 0, 0, 200));
+   scene.addChild(bg, 100);
+   var gray = createColorBg(cc.size(440, 570), cx, cy + 150, cc.color(80, 80, 80, 255));
+   bg.addChild(gray);
+   var gray = createColorBg(cc.size(440, 60), cx, cy - 180, cc.color(80, 80, 80, 255));
+   bg.addChild(gray);
+
+   // 标题
+   var label = new cc.LabelTTF(
+      "周排行榜",
+      'Arial-BoldMT',
+      40,
+      null,
+      cc.TEXT_ALIGNMENT_CENTER
+   );
+   label.attr({ x: cx, y: size.height - 80 });
+   label.setColor(cc.color(255, 165, 80, 255));
+   bg.addChild(label);
+   // 群排行
+   var groupBg = createColorBg(cc.size(200, 50), cx + 120, 233, cc.color(160, 160, 160, 255));
+   bg.addChild(groupBg);
+   var groupButton = new cc.MenuItemFont("查看群排行", function () {
+      rankSpriteFrame = null;
+      wxRankBg = null;
+      if (rankHandle)
+         clearInterval(rankHandle);
+      bg.removeFromParent(true);
+      scene.setEnable(true);
+   }, window);
+   groupButton.setFontSize(30);
+   groupButton.setColor(cc.color(10, 10, 10, 255));
+   groupButton.attr({ x: cx + 120, y: 233 });
+
+   // 关闭
+   var closeBg = createColorBg(cc.size(100, 50), cx - 170, 233, cc.color(160, 160, 160, 255));
+   bg.addChild(closeBg);
+   var closeButton = new cc.MenuItemFont("关闭", function () {
+      rankSpriteFrame = null;
+      wxRankBg = null;
+      if (rankHandle)
+         clearInterval(rankHandle);
+      bg.removeFromParent(true);
+      scene.setEnable(true);
+   }, window);
+   closeButton.setFontSize(30);
+   closeButton.setColor(cc.color(10, 10, 10, 255));
+   closeButton.attr({ x: cx - 170, y: 233 });
+
+   var menu = new cc.Menu(closeButton, groupButton);
+   menu.attr({ x: 0, y: 0 });
+   bg.addChild(menu);
+
+   // 显示内容
+   wxRankBg = cc.Sprite.create();
+   wxRankBg.attr({ x: cx, y: cy });
+   bg.addChild(wxRankBg);
+
+   // 开放域数据刷新
    let openDataContext = wx.getOpenDataContext();
    let sharedCanvas = openDataContext.canvas;
-   // 在主域将sharedCanvas宽高都按像素比放大
    sharedCanvas.width = 440;
    sharedCanvas.height = 800;
-   // wxRankBg.setScaleY();
-   rankTexture = new cc.Texture2D();
-   rankTexture.initWithElement(sharedCanvas);
    rankSpriteFrame = new cc.SpriteFrame();
    rankSpriteFrame.setRect(cc.rect(0, 0, 440, 800));
-   first = true;
+   drawTimes = 0;
    openDataContext.postMessage({ action: 'friendRank', key: 'top' });
    loopDrawShareCanvas();
-   rankHandle = setInterval(loopDrawShareCanvas, 1000);
-}
-// 关闭排行榜
-window.closeRankList = () => {
-   rankTexture = null;
-   rankSpriteFrame = null;
-   if (rankHandle)
-      clearInterval(rankHandle);
+   rankHandle = setInterval(loopDrawShareCanvas, 100);
 }

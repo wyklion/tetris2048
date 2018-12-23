@@ -188,24 +188,7 @@ var MainScene = cc.Scene.extend({
       }
       else if (isWeixinGame) {
          // 微信排行榜
-         var bg = new cc.LayerColor(cc.color(0, 0, 0, 200));
-         bg.setContentSize(size);
-         bg.setAnchorPoint(cc.p(0.5, 0.5));
-         bg.ignoreAnchorPointForPosition(false);
-         bg.attr({ x: cx, y: cy });
-         this.addChild(bg, 100);
-         var wxRankBg = window.wxRankBg = cc.Sprite.create();
-         wxRankBg.attr({ x: cx, y: cy });
-         bg.addChild(wxRankBg);
-         // 关闭
-         var closeButton = new cc.MenuItemFont("关闭", function () {
-            window.closeRankList;
-         }, window);
-         closeButton.setFontSize(25);
-         closeButton.setColor(cc.color(224, 224, 224, 255));
-         closeButton.attr({ x: cx, y: 80 });
-         bg.addChild(closeButton);
-         window.openRankList();
+         window.openRankList(this, size);
       }
       else {
          webShow(this);
