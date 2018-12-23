@@ -20,12 +20,11 @@ class RankListRenderer {
    }
 
    listen() {
-      var _this = this;
       wx.getUserInfo({
          openIdList: ['selfOpenId'],
-         success: function (res) {
+         success: res => {
             if (res.data && res.data.length) {
-               _this.currentUser = res.data[0];
+               this.currentUser = res.data[0];
             }
          }
       })
@@ -35,9 +34,9 @@ class RankListRenderer {
                return;
             this.fetchFriendData(msg.key);
          } else if (msg.action === 'groupRank') {
-            if (!msg.data || !msg.key)
+            if (!msg.ticket || !msg.key)
                return;
-            this.fetchGroupData(msg.data, msg.key);
+            this.fetchGroupData(msg.ticket, msg.key);
          } else if (msg.action === 'page') {
             if (!this.gameDatas.length)
                return;
@@ -88,14 +87,7 @@ class RankListRenderer {
             key,
          ],
          success: res => {
-            console.log("wx.getGroupCloudStorage success", res);
-            const dataLen = res.data.length;
-            this.gameDatas = dataSorter(res.data);
-            this.currPage = 0;
-            this.totalPage = Math.ceil(dataLen / PAGE_SIZE);
-            if (dataLen) {
-               this.showPagedRanks(0);
-            }
+            this.showRank(res.data, key);
          },
          fail: res => {
             console.log("wx.getGroupCloudStorage fail", res);
@@ -108,20 +100,24 @@ class RankListRenderer {
       wx.getFriendCloudStorage({
          keyList: [key],
          success: res => {
-            // console.log("wx.getFriendCloudStorage success", res);
-            this.currentData = null;
-            var rankList = this.gameDatas = this.getRankValues(res.data, key);
-            const dataLen = rankList.length;
-            this.currPage = 0;
-            this.totalPage = Math.ceil(dataLen / PAGE_SIZE);
-            if (dataLen) {
-               this.showPagedRanks(0);
-            }
+            this.showRank(res.data, key);
          },
          fail: res => {
             // console.log("wx.getFriendCloudStorage fail", res);
          },
       });
+   }
+
+   showRank(data, key) {
+      // console.log("rank info:", data);
+      this.currentData = null;
+      var rankList = this.gameDatas = this.getRankValues(data, key);
+      const dataLen = rankList.length;
+      this.currPage = 0;
+      this.totalPage = Math.ceil(dataLen / PAGE_SIZE);
+      if (dataLen) {
+         this.showPagedRanks(0);
+      }
    }
 
    showPagedRanks(page) {

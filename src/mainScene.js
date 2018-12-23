@@ -1,10 +1,11 @@
 /**
  * 主界面
  */
-var MainScene = cc.Scene.extend({
+var MainScene = window.MainScene = cc.Scene.extend({
    onEnter: function () {
       this._super();
       MainScene.instance = this;
+      MainScene.size = size;
 
       var cache = cc.spriteFrameCache;
       cache.addSpriteFrames(res.atlasPlist, res.atlas);

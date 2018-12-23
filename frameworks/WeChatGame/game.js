@@ -45,7 +45,9 @@ setInterval(() => {
 
 // 分享
 var height2 = windowHeight * 0.153;
-wx.showShareMenu();
+wx.showShareMenu({
+   withShareTicket: true
+})
 wx.onShareAppMessage(function () {
    return {
       title: '俄罗斯方块2048',
@@ -83,7 +85,7 @@ var loopDrawShareCanvas = () => {
    rankTexture.initWithElement(sharedCanvas);
    rankTexture.handleLoadedTexture();
    rankSpriteFrame.setTexture(rankTexture);
-   wxRankBg.setSpriteFrame(rankSpriteFrame);
+   rankSprite.setSpriteFrame(rankSpriteFrame);
    //  console.log('draw:', drawTimes);
 }
 // 画方块
@@ -96,25 +98,26 @@ var createColorBg = (size, x, y, color) => {
    return bg;
 }
 var rankSpriteFrame;
-var wxRankBg;
+var rankSprite;
+var rankBg;
 var rankHandle;
 var drawTimes = 0;
 // 开放域，排行榜
-window.openRankList = (scene, size) => {
+window.openRankList = (scene, size, ticket) => {
    var cx = size.width / 2;
    var cy = size.height / 2;
    // 背景
    scene.setEnable(false);
-   var bg = createColorBg(size, cx, cy, cc.color(0, 0, 0, 200));
-   scene.addChild(bg, 100);
+   rankBg = createColorBg(size, cx, cy, cc.color(0, 0, 0, 200));
+   scene.addChild(rankBg, 100);
    var gray = createColorBg(cc.size(440, 570), cx, cy + 150, cc.color(80, 80, 80, 255));
-   bg.addChild(gray);
+   rankBg.addChild(gray);
    var gray = createColorBg(cc.size(440, 60), cx, cy - 180, cc.color(80, 80, 80, 255));
-   bg.addChild(gray);
+   rankBg.addChild(gray);
 
    // 标题
    var label = new cc.LabelTTF(
-      "周排行榜",
+      ticket ? "群排行榜" : "周排行榜",
       'Arial-BoldMT',
       40,
       null,
@@ -122,17 +125,15 @@ window.openRankList = (scene, size) => {
    );
    label.attr({ x: cx, y: size.height - 80 });
    label.setColor(cc.color(255, 165, 80, 255));
-   bg.addChild(label);
+   rankBg.addChild(label);
    // 群排行
    var groupBg = createColorBg(cc.size(200, 50), cx + 120, 233, cc.color(160, 160, 160, 255));
-   bg.addChild(groupBg);
+   rankBg.addChild(groupBg);
    var groupButton = new cc.MenuItemFont("查看群排行", function () {
-      rankSpriteFrame = null;
-      wxRankBg = null;
-      if (rankHandle)
-         clearInterval(rankHandle);
-      bg.removeFromParent(true);
-      scene.setEnable(true);
+      wx.shareAppMessage({
+         title: '你能排第几？',
+         imageUrl: 'res/pic.jpg'
+      })
    }, window);
    groupButton.setFontSize(30);
    groupButton.setColor(cc.color(10, 10, 10, 255));
@@ -140,14 +141,9 @@ window.openRankList = (scene, size) => {
 
    // 关闭
    var closeBg = createColorBg(cc.size(100, 50), cx - 170, 233, cc.color(160, 160, 160, 255));
-   bg.addChild(closeBg);
+   rankBg.addChild(closeBg);
    var closeButton = new cc.MenuItemFont("关闭", function () {
-      rankSpriteFrame = null;
-      wxRankBg = null;
-      if (rankHandle)
-         clearInterval(rankHandle);
-      bg.removeFromParent(true);
-      scene.setEnable(true);
+      closeRanklist();
    }, window);
    closeButton.setFontSize(30);
    closeButton.setColor(cc.color(10, 10, 10, 255));
@@ -155,12 +151,12 @@ window.openRankList = (scene, size) => {
 
    var menu = new cc.Menu(closeButton, groupButton);
    menu.attr({ x: 0, y: 0 });
-   bg.addChild(menu);
+   rankBg.addChild(menu);
 
    // 显示内容
-   wxRankBg = cc.Sprite.create();
-   wxRankBg.attr({ x: cx, y: cy });
-   bg.addChild(wxRankBg);
+   rankSprite = cc.Sprite.create();
+   rankSprite.attr({ x: cx, y: cy });
+   rankBg.addChild(rankSprite);
 
    // 开放域数据刷新
    let openDataContext = wx.getOpenDataContext();
@@ -170,7 +166,26 @@ window.openRankList = (scene, size) => {
    rankSpriteFrame = new cc.SpriteFrame();
    rankSpriteFrame.setRect(cc.rect(0, 0, 440, 800));
    drawTimes = 0;
-   openDataContext.postMessage({ action: 'friendRank', key: 'top' });
+   openDataContext.postMessage({ action: ticket ? 'groupRank' : 'friendRank', key: 'top', ticket: ticket });
    loopDrawShareCanvas();
    rankHandle = setInterval(loopDrawShareCanvas, 100);
 }
+// 关闭排行榜
+var closeRanklist = () => {
+   rankSpriteFrame = null;
+   rankSprite = null;
+   if (rankHandle)
+      clearInterval(rankHandle);
+   rankBg.removeFromParent(true);
+   if (MainScene.instance) {
+      MainScene.instance.setEnable(true);
+   }
+}
+// 打开转发
+wx.onShow(res => {
+   var shareTicket = res.shareTicket;
+   if (shareTicket && MainScene.instance) {
+      closeRanklist();
+      openRankList(MainScene.instance, MainScene.size, shareTicket);
+   }
+});
