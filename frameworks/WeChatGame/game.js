@@ -51,13 +51,14 @@ wx.showShareMenu({
 wx.onShareAppMessage(function () {
    return {
       title: '俄罗斯方块2048',
-      imageUrl: canvas.toTempFilePathSync({
-         x: 0, y: height2 * pixelRatio,
-         width: windowWidth * pixelRatio,
-         height: (windowHeight - height2 * 2) * pixelRatio,
-         destWidth: 500,
-         destHeight: 400
-      })
+      imageUrl: 'res/pic.jpg',
+      // imageUrl: canvas.toTempFilePathSync({
+      //    x: 0, y: height2 * pixelRatio,
+      //    width: windowWidth * pixelRatio,
+      //    height: (windowHeight - height2 * 2) * pixelRatio,
+      //    destWidth: 500,
+      //    destHeight: 400
+      // })
    }
 })
 
@@ -106,13 +107,17 @@ var drawTimes = 0;
 window.openRankList = (scene, size, ticket) => {
    var cx = size.width / 2;
    var cy = size.height / 2;
+   // 两个按钮
+   var btnTextColor = cc.color(255, 254, 254, 255);
+   var btnBgColor = cc.color(58, 177, 183, 255);
+   var bgColor = cc.color(145, 197, 202, 255);
    // 背景
    scene.setEnable(false);
-   rankBg = createColorBg(size, cx, cy, cc.color(0, 0, 0, 200));
+   rankBg = createColorBg(size, cx, cy, cc.color(0, 0, 0, 150));
    scene.addChild(rankBg, 100);
-   var gray = createColorBg(cc.size(440, 570), cx, cy + 150, cc.color(80, 80, 80, 255));
+   var gray = createColorBg(cc.size(440, 570), cx, cy + 150, bgColor);
    rankBg.addChild(gray);
-   var gray = createColorBg(cc.size(440, 60), cx, cy - 180, cc.color(80, 80, 80, 255));
+   var gray = createColorBg(cc.size(440, 60), cx, cy - 180, bgColor);
    rankBg.addChild(gray);
 
    // 标题
@@ -124,30 +129,38 @@ window.openRankList = (scene, size, ticket) => {
       cc.TEXT_ALIGNMENT_CENTER
    );
    label.attr({ x: cx, y: size.height - 80 });
-   label.setColor(cc.color(255, 165, 80, 255));
+   label.setColor(cc.color(255, 254, 194, 255));
    rankBg.addChild(label);
    // 群排行
-   var groupBg = createColorBg(cc.size(200, 50), cx + 120, 233, cc.color(160, 160, 160, 255));
+   var groupBg = createColorBg(cc.size(200, 50), cx + 120, 233, btnBgColor);
    rankBg.addChild(groupBg);
-   var groupButton = new cc.MenuItemFont("查看群排行", function () {
-      wx.shareAppMessage({
-         title: '你能排第几？',
-         imageUrl: 'res/pic.jpg'
-      })
-   }, window);
+   var groupButton;
+   if (!ticket) {
+      groupButton = new cc.MenuItemFont("查看群排行", function () {
+         wx.shareAppMessage({
+            title: '你能排第几？',
+            imageUrl: 'res/pic.jpg'
+         })
+      }, window);
+   } else {
+      groupButton = new cc.MenuItemFont("我来试一试", function () {
+         closeRanklist();
+         MainScene.play(true);
+      }, window);
+   }
    groupButton.setFontSize(30);
-   groupButton.setColor(cc.color(10, 10, 10, 255));
-   groupButton.attr({ x: cx + 120, y: 233 });
+   groupButton.setColor(btnTextColor);
+   groupButton.attr({ x: cx + 120, y: 230 });
 
    // 关闭
-   var closeBg = createColorBg(cc.size(100, 50), cx - 170, 233, cc.color(160, 160, 160, 255));
+   var closeBg = createColorBg(cc.size(100, 50), cx - 170, 233, btnBgColor);
    rankBg.addChild(closeBg);
    var closeButton = new cc.MenuItemFont("关闭", function () {
       closeRanklist();
    }, window);
    closeButton.setFontSize(30);
-   closeButton.setColor(cc.color(10, 10, 10, 255));
-   closeButton.attr({ x: cx - 170, y: 233 });
+   closeButton.setColor(btnTextColor);
+   closeButton.attr({ x: cx - 170, y: 230 });
 
    var menu = new cc.Menu(closeButton, groupButton);
    menu.attr({ x: 0, y: 0 });
