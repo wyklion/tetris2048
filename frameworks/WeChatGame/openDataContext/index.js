@@ -9,6 +9,7 @@ class RankListRenderer {
       this.gameDatas = [];
       this.currentData = null;
       this.currentUser = null;
+      this.mondayTime = this.getMondayTime() / 1000;
       this.init();
    }
 
@@ -17,6 +18,16 @@ class RankListRenderer {
       this.ctx = this.canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = true;
       this.ctx.imageSmoothingQuality = "high";
+   }
+
+   // 取周一5点的时间戳
+   getMondayTime() {
+      var nowDate = new Date();
+      var day = nowDate.getDay();
+      if (day === 0) day = 7;
+      var monday = new Date(nowDate - (day - 1) * 86400000);
+      monday.setHours(5, 0, 0, 0);
+      return monday.getTime();
    }
 
    listen() {
@@ -57,7 +68,8 @@ class RankListRenderer {
          item.KVDataList.forEach(d => {
             var jvalue = JSON.parse(d.value);
             var value = jvalue.wxgame.score;
-            if (d.key === key && value) {
+            var updateTime = jvalue.wxgame.update_time;
+            if (d.key === key && updateTime > this.mondayTime && value) {
                score = value;
             }
          })
