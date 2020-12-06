@@ -88,7 +88,7 @@ var PlayScene = cc.Scene.extend({
          );
          relaxLabel.attr({
             x: isWeixinGame ? Math.min(cx + 180, right - 120) : Math.max(cx - 180, left + 120),
-            y: height - 50,
+            y: height - 65,
             color: cc.color(255, 254, 194),
          })
          this.addChild(relaxLabel);
@@ -101,7 +101,7 @@ var PlayScene = cc.Scene.extend({
          null,
          cc.TEXT_ALIGNMENT_CENTER
       );
-      scoreLabel.attr({ x: cx, y: height - 50 });
+      scoreLabel.attr({ x: cx, y: height - 70 });
       this.addChild(scoreLabel);
 
       // --等级
@@ -117,7 +117,7 @@ var PlayScene = cc.Scene.extend({
       // --]]
       // 下一块
       var nextSprite = new cc.Sprite(res.next);
-      nextSprite.attr({ x: isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, y: height - 50 });
+      nextSprite.attr({ x: isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, y: height - 65 });
       this.addChild(nextSprite, 1);
    },
    suspend: function () {
@@ -158,7 +158,7 @@ var PlayScene = cc.Scene.extend({
          this.nextPic.removeFromParent(true);
       }
       this.nextPic = this.tetris.getNumerSprite(num);
-      this.nextPic.setPosition(isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, height - 50);
+      this.nextPic.setPosition(isWeixinGame ? cx - (right - cx) * 0.5 : cx + (right - cx) * 0.5, height - 65);
       this.nextPic.setScale(0.63);
       this.addChild(this.nextPic);
    },
