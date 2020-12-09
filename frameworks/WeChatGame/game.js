@@ -22,19 +22,21 @@ var createBanner = function () {
          width: windowWidth,
       }
    })
-   bannerAd.show();
    bannerAd.onResize(res => {
-      bannerAd.style.left = (windowWidth - bannerAd.style.realWidth) * 0.5;
-      bannerAd.style.top = windowHeight - bannerAd.style.realHeight;
-      if (bannerAd.style.realHeight > height) {
+      bannerAd.style.left = (windowWidth - bannerAd.style.realWidth) * 0.5 + 0.1;
+      bannerAd.style.top = windowHeight - bannerAd.style.realHeight + 0.1;
+      /*if (bannerAd.style.realHeight > height) {
          bannerAd.style.width = windowWidth * height / bannerAd.style.realHeight;
-      }
+      }*/
    })
    bannerAd.onLoad(() => {
       if (lastBanner) {
          lastBanner.destroy();
       }
       lastBanner = bannerAd;
+   });
+   bannerAd.onError((e) => {
+	   console.log(e);
    });
    bannerAd.show();
 }
