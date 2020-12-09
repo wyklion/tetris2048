@@ -19,7 +19,7 @@ var createBanner = function () {
       adUnitId: 'adunit-c0ee23e59d3ce0ae',
       style: {
          left: 0, top: 0,
-         width: windowWidth,
+         width: 320,
       }
    })
    bannerAd.onResize(res => {
@@ -36,7 +36,7 @@ var createBanner = function () {
       lastBanner = bannerAd;
    });
    bannerAd.onError((e) => {
-	   console.log(e);
+      console.log(e);
    });
    bannerAd.show();
 }
